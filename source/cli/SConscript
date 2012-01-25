@@ -1,0 +1,19 @@
+
+Import("env")
+sources = """
+    		cli.cpp
+    		../ipc/ipc.cpp
+    		../ptasking/ptasking.cpp
+    		../log/log.cpp
+    		test_cli.cpp
+    	  """
+
+test_cli=env.Program("test_cli", Split(sources))
+env.Install("#build", test_cli)
+
+sources = """
+    		clitool.cpp
+    	  """
+clitool=env.Program("clitool", Split(sources))
+env.Install("#build", clitool)
+

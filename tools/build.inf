@@ -1,0 +1,36 @@
+
+[default]
+branch:
+    .
+
+libdirs:
+    BDP_Linux/oss/library/qt/lib
+    BDP_Linux/oss/library/DirectFB/DirectFB-1.2.7/lib
+    BDP_Generic/build/sysroot/lib
+    BDP_Generic/build/sysroot/usr/lib
+    BDP_Generic/build/sysroot/usr/local/bin/skype
+
+library:
+    QtGui
+    QtNetwork
+    QtCore
+    QtXml
+    pthread
+    z
+    directfb
+    direct
+    fusion
+    png12
+    ssl
+    crypto
+
+include:
+    BDP_Linux/oss/library/qt/include/QtCore
+    BDP_Linux/oss/library/qt/include/QtNetwork
+    BDP_Linux/oss/library/qt/include/QtXml
+    BDP_Linux/oss/library/qt/include/QtGui
+    BDP_Linux/oss/library/qt/include
+    BDP_Generic/build/sysroot/include
+    BDP_Generic/build/sysroot/usr/include/directfb
+    BDP_Generic/build/sysroot/usr/include
+    .

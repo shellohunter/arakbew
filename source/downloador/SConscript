@@ -1,0 +1,5 @@
+Import("env")
+
+src_files = Split("""downloader.cpp""")
+test_downloader=env.Program('test_downloader',src_files)
+env.Install('#build',test_downloader)

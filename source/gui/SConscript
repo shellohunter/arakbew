@@ -1,0 +1,17 @@
+Import("env")
+
+qrccpp = env.Qrc4("Karaoke")
+src_files = Split("""
+            main.cpp
+            GuiManager.cpp
+            Karaoke.cpp
+            Background.cpp
+            login/Login.cpp
+            ../log/log.cpp
+            ../cli/cli.cpp
+            ../ipc/ipc.cpp
+            ../ptasking/ptasking.cpp
+            """)
+
+webkara = env.Program('webkara',src_files+qrccpp)
+env.Install("#build", webkara)

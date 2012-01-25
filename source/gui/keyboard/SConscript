@@ -1,0 +1,13 @@
+
+
+Import("env")
+
+
+test_keyboard = env.Program("test_keyboard", "test_keyboard.cpp");
+env.Install("#build", test_keyboard);
+
+
+
+
+
+

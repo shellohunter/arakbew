@@ -1,0 +1,5 @@
+Import("env")
+
+src_files = Split("""ptasking.cpp test_ptasking.cpp ../log/log.cpp ../cli/cli.cpp""")
+test_ptasking=env.Program('test_ptasking',src_files)
+env.Install("#build", test_ptasking)

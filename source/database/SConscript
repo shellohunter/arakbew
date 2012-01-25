@@ -1,0 +1,6 @@
+Import("env")
+VariantDir('build', 'source', duplicate=0)
+src_files = Split("""test_database.cpp database.cpp sqlite3.c""")
+
+test_database = env.Program('test_database',src_files)
+env.Install("#build", test_database)

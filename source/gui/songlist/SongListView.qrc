@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="">
+         <file>../images/song_select.png</file>
+         <file>../images/song_delete.png</file>
+         <file>../images/song_hili.png</file>
+	</qresource>
+</RCC>
