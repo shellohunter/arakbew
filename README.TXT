@@ -22,7 +22,7 @@ That's all.
 -----------------------------------------------------------------------
 How to build it on linux server ?
 -----------------------------------------------------------------------
-1. Make sure you have a 8580 workspace, perform a full build.
+1. Make sure you have a 8580 workspace, then perform a full build.
 
 2. The project is located at "BDP_Linux/mtk/source/webkara" by default.
    "cd" to that folder, and excute:
