@@ -1,0 +1,12 @@
+# ignore list
+
+
+build/
+backup/
+.*/
+Thumbs.db
+*.dblite
+*.a *.o *.obj
+*.swp
+*.log
+*.pyc

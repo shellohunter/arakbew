@@ -1,112 +1,154 @@
 
 
-#include "SongListView.hpp"
+#include<QtGui>
+#include<QtCore>
+#include"SongListView.hpp"
 
-SongItemView::SongItemView(QWidget * parent) : QWidget(parent)
+
+
+SongListView::SongListView(DataSet<Song*>& songs, QWidget * parent)
+    :QTableView(parent)
 {
- 
-    this->setFocusPolicy(Qt::NoFocus);
-    this->setFixedSize(330,30);
-#if 0
-    this->setAutoFillBackground(true);
-    QPalette palette = this->palette();
-    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/song_hili.png").scaled( // 缩放背景图.  
-                            this->size(),  
-                            Qt::IgnoreAspectRatio,  
-                            Qt::SmoothTransformation)));
-    this->setPalette(palette);
-#endif
-    this->song = Song();
+    API();
+    delegate=new SongListItemDelegate();
+    model=new SongListStandardItemModel(songs);    
 
-    QHBoxLayout * hboxlayout = new QHBoxLayout();
+    this->setModel(model);
+    this->setItemDelegate(delegate);
 
- 
-    songname = new QLabel(QString("No Name"), this);
-    //songname->setGeometry(0, 0, 200, 30);
-
-    singername = new QLabel(QString("Unknown Artist"), this);    
-    //singername->setGeometry(100, 0, 100, 30);
-
-    status = new QLabel(QString("selected"), this);
-#if 0
-    status->setIcon(QPixmap(":/images/song_select.png"));
-#elif 0
-    QPalette palette;
-    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/song_select.png")));
-    status->setPalette(palette);
-#else
-    status->setPixmap(QPixmap(":/images/song_select.png"));
-#endif
-    //status->setGeometry(300, 0, 30, 30);
-
-    hboxlayout->addWidget(songname);
-    hboxlayout->addWidget(singername);
-    hboxlayout->addWidget(status);
-    this->setLayout(hboxlayout);
-}
-#if 0
-SongItemView::SongItemView(Song& song, QWidget * parent) : QWidget(parent)
-{
-    this->setFixedSize(330, 30);
-    this->song = song;
-    songname = new QLabel(QString(song.name.c_str()), this);
-    songname->setGeometry(0, 0, 200, 30);
-    songname->setStyleSheet(QString("border:1 black solid"));
-
-    singername = new QLabel(song.artistName.c_str(), this);    
-    singername->setGeometry(100, 0, 100, 30);
-    singername->setStyleSheet(QString("border:1 black solid"));
-
-    status = new QLabel(this);
-#if 0
-    status->setIcon(QPixmap(":/images/song_select.png"));
-#elif 0
-    QPalette palette;
-    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/song_select.png")));
-    status->setPalette(palette);
-#else
-    status->setPixmap(QPixmap(":/images/song_select.png"));
-#endif
-    status->setGeometry(300, 0, 30, 30);
-    status->setStyleSheet(QString("border:1 black solid"));
-}
-#endif
-
-SongItemView::~SongItemView()
-{
+    this->resizeColumnsToContents();
+    this->resizeRowsToContents();
+    this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    this->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->setMouseTracking(true);//important
+    installEventFilter(this);
 }
 
-void SongItemView::focusInEvent ( QFocusEvent * event )
+void SongListView::keyPressEvent (QKeyEvent * keyEvent)
 {
-    printf("focus in!\n");
-#if 0
-    QPalette palette = this->palette();
-    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/song_hili.png").scaled( // 缩放背景图.  
-                            this->size(),  
-                            Qt::IgnoreAspectRatio,  
-                            Qt::SmoothTransformation)));
-    this->setPalette(palette);
-#else
-    this->setStyleSheet(QString("border-image: url(:/images/song_hili.png)"));
-#endif
-}
+    switch(keyEvent->key())
+    {
+        case Qt::Key_Select:
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+        {
+            QVariant var=model->data(currentIndex().parent(),Qt::CheckStateRole);
+            bool isFavourite=var.toBool();
+            if(var.isValid())
+                isFavourite=isFavourite?false:true;
+            else
+                isFavourite=true;
+            model->setData(currentIndex().parent(),isFavourite,Qt::CheckStateRole);
+            qDebug("Key_Select %d!!!\n", isFavourite);
+            qDebug()<<currentIndex().data().toString();
+            break;
+        }
+        default:
+            break;
+    }
 
-void SongItemView::focusOutEvent ( QFocusEvent * event )
-{
-    printf("focus out!\n");
-#if 0
-    QPalette palette = this->palette();
-    palette.setBrush(QPalette::Background, QBrush(QPixmap("")));
-    this->setPalette(palette);
-#else
-    this->setStyleSheet(QString(""));
-#endif
-
+    return QTableView::keyPressEvent(keyEvent);
 }
 
 
-Song& SongItemView::getSong()
+void SongListView::mouseMoveEvent(QMouseEvent * event)
 {
-    return song;
+    int column=this->columnAt(event->x());
+    int row=this->rowAt(event->y());
+    if(column==0 && row!=-1){
+        this->setCursor(Qt::PointingHandCursor);
+    }
+    else{
+        this->setCursor(Qt::ArrowCursor);
+    }
+}
+
+SongListItemDelegate::SongListItemDelegate(QObject * parent)
+    :QItemDelegate(parent)
+{
+    API();
+    favouritePixmap=QPixmap(":/images/song_select.png");
+    notFavouritePixmap=QPixmap("");
+}
+
+void SongListItemDelegate::paint(QPainter * painter,
+        const QStyleOptionViewItem & option,
+        const QModelIndex & index) const
+{
+    API();
+    if(index.column()!=3)
+    {
+        QItemDelegate::paint(painter,option,index);
+        return;
+    }
+    const QAbstractItemModel * model=index.model();
+    QVariant var=model->data(index,Qt::CheckStateRole);
+    if(var.isNull())
+        var=false;
+    const QPixmap & star=var.toBool()? favouritePixmap:notFavouritePixmap;
+
+    int width=star.width();
+    int height=star.height();
+    QRect rect=option.rect;
+    int x=rect.x()+rect.width()/2-width/2;
+    int y=rect.y()+rect.height()/2-height/2;
+
+    painter->drawPixmap(x,y,star);
+    //QItemDelegate::paint(painter,option,index);
+}
+
+bool SongListItemDelegate::editorEvent(QEvent * event,
+        QAbstractItemModel * model,
+        const QStyleOptionViewItem & /*option*/,
+        const QModelIndex & index)
+{
+    API();
+    if(event->type()== QEvent::MouseButtonPress && index.column()==3)
+    {
+        QVariant var=model->data(index,Qt::CheckStateRole);
+        bool isFavourite=var.toBool();
+        if(var.isValid())
+            isFavourite=isFavourite?false:true;
+        else
+            isFavourite=true;
+        model->setData(index,isFavourite,Qt::CheckStateRole);
+        return true;//I have handled the event
+    }
+
+    return false;
+}
+
+SongListStandardItemModel::SongListStandardItemModel(DataSet<Song*>& songs, QObject * parent)
+    :QStandardItemModel(parent)
+{
+    QStringList headerLabels;
+    headerLabels << "Name" << "Album" << "Singer" << "Status";
+    this->setHorizontalHeaderLabels(headerLabels);
+    this->setRowCount(songs.size());
+    this->setColumnCount(4);
+    for(int i=0; i<songs.size(); i++)
+    {
+        this->setData(this->index(i, 0), QVariant(songs.data[i]->name.c_str())); //为每行设置值
+        this->setData(this->index(i, 1), QVariant(songs.data[i]->url.c_str()));
+        this->setData(this->index(i, 2), QVariant(songs.data[i]->artistName.c_str()));
+    }
+
+}
+
+
+QVariant SongListStandardItemModel::data(
+        const QModelIndex & index,
+        int role) const
+{
+    API();
+#if 0
+    int column=index.column();
+
+    if(role==Qt::DisplayRole && column!=3)
+        return tr("heyssssss");
+    if(role==Qt::ToolTipRole && column==3)
+        return tr("love");
+#endif
+    return QStandardItemModel::data(index,role);
 }
 

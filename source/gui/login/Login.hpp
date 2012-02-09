@@ -4,6 +4,8 @@
 #include <QtGui>
 #include <QtCore>
 #include "../GuiManager.hpp"
+#include "../widget/inputline.hpp"
+#include "../widget/keyboard.hpp"
 
 class Login : public GuiModule
 {
@@ -23,8 +25,8 @@ private:
     QLabel * label_title;
     QLabel * label_username;
     QLabel * label_password;
-    QLineEdit * edit_username;
-    QLineEdit * edit_password;
+    InputLine * edit_username;
+    InputLine * edit_password;
     QPushButton * btn_login;
     QPushButton * btn_register;
     QPushButton * btn_exit;

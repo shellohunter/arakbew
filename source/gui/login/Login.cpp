@@ -16,19 +16,20 @@ int Login::init()
 {
     LOG_API();
 
-    root            = new QWidget(parentWidget);
+    root = new QWidget(parentWidget);
 
     root->setAutoFillBackground(true);
     QPalette palette = root->palette();
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/dialog_background.png")));
     root->setPalette(palette);
 
+    KeyBoard * kb = new KeyBoard("");
     label_title     = new QLabel(QObject::tr("Welcome to karaoke!"));
     label_username  = new QLabel(QObject::tr("username"));
     label_password  = new QLabel(QObject::tr("password"));
-    edit_username   = new QLineEdit();
-    edit_password   = new QLineEdit();
-    edit_password->setEchoMode(QLineEdit::Password);
+    edit_username   = new InputLine(kb);
+    edit_password   = new InputLine(kb);
+    edit_password->echo(false);
     btn_login       = new QPushButton(QObject::tr("Login"));
     btn_register    = new QPushButton(QObject::tr("Register"));
     btn_exit        = new QPushButton(QObject::tr("Exit"));

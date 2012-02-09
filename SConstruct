@@ -1,11 +1,28 @@
 import sys
 import os
-from tools.build import *
+from tools.myhelper import *
 
 
 #*********************************************
 # Change code with care !!!!
 #*********************************************
+
+
+
+def build(env, sourcepath, objpath="#.temp"):
+    if os.path.isfile(sourcepath):
+        if sourcepath.endswith(".cpp") or sourcepath.endswith(".c"):
+            print(sourcepath.replace("source", objpath))
+            env.Object(sourcepath.replace("source", objpath))
+    elif os.path.isdir(sourcepath):
+        if os.path.exists(os.path.join(sourcepath,"SConscript")):
+            print(os.path.join(sourcepath,"SConscript"))
+            env.SConscript(os.path.join(sourcepath,"SConscript").replace("source", objpath))
+        all = os.listdir(sourcepath)
+        for each in all:
+            subpath = os.path.join(sourcepath, each)
+            build(env, subpath)
+
 
 env=Environment()
 env.Append(CPPPATH=['#source/include'])
@@ -26,7 +43,7 @@ else:
     PkgReConfig(qtpath)
     env['QT4DIR']   = qtpath
     env['ENV']['PKG_CONFIG_PATH']    = os.path.join(qtpath, "lib/pkgconfig")
-    CROSS_COMPILER_PREFIX="/mtkoss/gnuarm/vfp_4.5.1_2.6.27_cortex-a9-rhel4/i686/bin/armv7a-mediatek451_001_vfp-linux-gnueabi-"
+    CROSS_COMPILER_PREFIX=config["TOOLCHAIN"]
     env.Replace(CC=[CROSS_COMPILER_PREFIX+"gcc"])
     env.Replace(CXX=[CROSS_COMPILER_PREFIX+"g++"])
     env.Replace(AR=[CROSS_COMPILER_PREFIX+"ar"])

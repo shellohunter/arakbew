@@ -1,0 +1,20 @@
+
+
+Import("env")
+
+sources = Split("""test_keyboard.cpp
+                   keyboard.cpp
+                   inputline.cpp
+                   ../../log/log.cpp
+                   ../../cli/cli.cpp
+                   ../../ptasking/ptasking.cpp
+                """)
+
+test_keyboard = env.Program("test_keyboard", sources);
+env.Install("#build", test_keyboard);
+
+
+
+
+
+

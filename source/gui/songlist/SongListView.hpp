@@ -1,39 +1,56 @@
+#ifndef SONGLISTVIEW_HPP
+#define SONGLISTVIEW_HPP
 
 #include <QtGui>
 #include <QtCore>
 #include "database.hpp"
 
-/*
+class SongListView;
+class SongListItemDelegate;
+class SongListStandardItemModel;
 
-    1. Search song by song name.
-    songname+singer img+singer+tickle
-    
-    2. Search song by singer.
-
-*/
-
-
-
-class SongItemView : public QWidget
+class SongListView:public QTableView
 {
-Q_OBJECT
-public:
-    SongItemView(QWidget * parent = NULL);
-    //SongItemView(Song& song, QWidget * parent = NULL);
-    virtual ~SongItemView();
+    public:
+        SongListView(DataSet<Song*>& songs, QWidget * parent=0);
+        virtual ~SongListView(){}
 
-    Song& getSong();    
+    protected:
+        void mouseMoveEvent(QMouseEvent * event);
 
-protected:
-    QLabel * songname;
-    QLabel * singername;
-    QLabel * status;
-    void focusInEvent ( QFocusEvent * event );
-    void focusOutEvent ( QFocusEvent * event );
-
-private:
-    Song song;
+    private:
+        SongListItemDelegate * delegate;
+        SongListStandardItemModel * model;        
+        void keyPressEvent (QKeyEvent * keyEvent);
 };
 
+class SongListItemDelegate:public QItemDelegate
+{
+    public:
+        SongListItemDelegate(QObject * parent=0);
+        virtual ~ SongListItemDelegate(){}
 
+        void paint(QPainter * painter,
+                const QStyleOptionViewItem & option,
+                const QModelIndex & index) const;
+        bool editorEvent(QEvent * event,
+                QAbstractItemModel * model,
+                const QStyleOptionViewItem & option,
+                const QModelIndex & index);
+    private:
+        QPixmap favouritePixmap;
+        QPixmap notFavouritePixmap;
 
+};
+
+class SongListStandardItemModel:public QStandardItemModel
+{
+    public:
+        SongListStandardItemModel(DataSet<Song*>& songs, QObject * parent = NULL);
+        virtual ~ SongListStandardItemModel(){}
+        
+        QVariant data(const QModelIndex & index,
+                      int role=Qt::DisplayRole) const;
+};
+
+#endif /* SONGLISTVIEW_HPP */
