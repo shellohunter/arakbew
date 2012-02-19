@@ -1,26 +1,10 @@
 
-#include "database.hpp"
-#include "stdio.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "sqlite3.h"
-#include "string.h"
-
-typedef struct
-{
-    char * name; /* mandatory */
-    char * url; /* mandatory */
-    char * artistName;
-}SONG;
-
-
-
-typedef struct
-{
-    char * artistName;
-    eGender gender; /* male, female, band, unknown...*/
-    char * imgurl; /* male, female, band, unknown...*/
-}ARTIST;
-
+#include "database.hpp"
+#include "shared.hpp"
 
 
 void Song::toString()
@@ -72,10 +56,7 @@ KaraokeDatabase::KaraokeDatabase(string filepath)
 KaraokeDatabase::~KaraokeDatabase()
 {   
     API();
-
-    //close datebase
-    sqlite3_close(this->pDatabase);
-    this->pDatabase = NULL;
+    close();
 } 
 
 int KaraokeDatabase::open(string filepath)
@@ -94,7 +75,7 @@ int KaraokeDatabase::open(string filepath)
     }
     else
     {
-        printf("<SQlite> Database %s is open sucessful!!\n", filepath.c_str());
+        printf("<SQlite> Open %s sucessfully!!\n", filepath.c_str());
         this->pDatabase = pDatabase;
     }
 
@@ -102,23 +83,22 @@ int KaraokeDatabase::open(string filepath)
 }
 
 
-sqlite3* KaraokeDatabase::getDatabase()
-{
-    if (this->pDatabase != NULL)
-    {
-        return this->pDatabase;
-    }
-    else
-    {
-        return NULL;
-    }
-}
 
 int KaraokeDatabase::close()
 {
     API();
+    //close datebase
+    sqlite3_close(this->pDatabase);
+    this->pDatabase = NULL;
     return E_OK;
 }
+
+
+sqlite3* KaraokeDatabase::getDatabase()
+{
+    return this->pDatabase;
+}
+
 
 int KaraokeDatabase::execFindCount(string SQL)
 {
@@ -261,16 +241,9 @@ int KaraokeDatabase::getSong(Song & song, int index)
     }
 
     //free pStmt
-    if (pStmt != NULL)
-    {
-        sqlite3_finalize(pStmt);
-        pStmt = NULL;
-    }
-    if (pSqlMsg != NULL)
-    {
-        free(pSqlMsg);
-        pSqlMsg =NULL;
-    }
+    sqlite3_finalize(pStmt);
+    FREE(pStmt);
+    FREE(pSqlMsg);
 
     return rc;
 }
@@ -367,7 +340,7 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, string songName
                 }
                 song->albumName = "unknown";
 
-                songs.data.push_back(song);
+                songs.push_back(song);
 
                 //exec next
                 rc = sqlite3_step(pStmt);
@@ -376,16 +349,9 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, string songName
     }
 
     //free pStmt
-    if (pStmt != NULL)
-    {
-        sqlite3_finalize(pStmt);
-        pStmt = NULL;
-    }
-    if (pSqlMsg != NULL)
-    {
-        free(pSqlMsg);
-        pSqlMsg =NULL;
-    }
+    sqlite3_finalize(pStmt);
+    FREE(pStmt);
+    FREE(pSqlMsg);
 
     return songs;
 }
@@ -476,7 +442,7 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, int startIndex,
                 }
                 song->albumName = "unknown";
 
-                songs.data.push_back(song);
+                songs.push_back(song);
                 //exec next
                 rc = sqlite3_step(pStmt);
 
@@ -484,17 +450,11 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, int startIndex,
         }
     }
 
+
     //free pStmt
-    if (pStmt != NULL)
-    {
-        sqlite3_finalize(pStmt);
-        pStmt = NULL;
-    }
-    if (pSqlMsg != NULL)
-    {
-        free(pSqlMsg);
-        pSqlMsg =NULL;
-    }
+    sqlite3_finalize(pStmt);
+    FREE(pStmt);
+    FREE(pSqlMsg);
 
     return songs;
 
@@ -608,7 +568,7 @@ DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, string 
                 }
                 song->albumName = "unknown";
 
-                songs.data.push_back(song);
+                songs.push_back(song);
 
                 //exec next
                 rc = sqlite3_step(pStmt);
@@ -617,16 +577,9 @@ DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, string 
     }
 
     //free pStmt
-    if (pStmt != NULL)
-    {
-        sqlite3_finalize(pStmt);
-        pStmt = NULL;
-    }
-    if (pSqlMsg != NULL)
-    {
-        free(pSqlMsg);
-        pSqlMsg =NULL;
-    }
+    sqlite3_finalize(pStmt);
+    FREE(pStmt);
+    FREE(pSqlMsg);
 
     return songs;
 }
@@ -729,16 +682,9 @@ int KaraokeDatabase::getArtist(Artist & artist, int index)
     }
 
     //free pStmt
-    if (pStmt != NULL)
-    {
-        sqlite3_finalize(pStmt);
-        pStmt = NULL;
-    }
-    if (pSqlMsg != NULL)
-    {
-        free(pSqlMsg);
-        pSqlMsg =NULL;
-    }
+    sqlite3_finalize(pStmt);
+    FREE(pStmt);
+    FREE(pSqlMsg);
 
     return rc;
 }
@@ -843,7 +789,7 @@ DataSet<Artist*>& KaraokeDatabase::getArtists(DataSet<Artist*>& artists, string 
                     }
                 }
 
-                artists.data.push_back(artist);
+                artists.push_back(artist);
 
                 //exec next
                 rc = sqlite3_step(pStmt);
@@ -852,16 +798,9 @@ DataSet<Artist*>& KaraokeDatabase::getArtists(DataSet<Artist*>& artists, string 
     }
 
     //free pStmt
-    if (pStmt != NULL)
-    {
-        sqlite3_finalize(pStmt);
-        pStmt = NULL;
-    }
-    if (pSqlMsg != NULL)
-    {
-        free(pSqlMsg);
-        pSqlMsg =NULL;
-    }
+    sqlite3_finalize(pStmt);
+    FREE(pStmt);
+    FREE(pSqlMsg);
 
     return artists;
 

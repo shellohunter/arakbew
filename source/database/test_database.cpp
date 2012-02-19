@@ -29,40 +29,43 @@ int main()
     DataSet<Song*> songs;
 
     database.getSongs(songs, "A");
+    songs.toString();
     for(int i=0;i<songs.size();i++)
     {
-        songs.data[i]->toString();
+        songs.at(i)->toString();
     }
     songs.clear();
     printf("----------------------------------\n");
     
     database.getSongs(songs,0,2);
+    songs.toString();
     for(int i=0;i<songs.size();i++)
     {
-        songs.data[i]->toString();
+        songs.at(i)->toString();
     }
     songs.clear();
     printf("----------------------------------\n");   
 
     database.getSongsByArtist(songs,"lady gaga");
+    songs.toString();
     for(int i=0;i<songs.size();i++)
     {
-        songs.data[i]->toString();
+        songs.at(i)->toString();
     }
     songs.clear();
     printf("----------------------------------\n");   
 
     DataSet<Artist*> artists;
     database.getArtists(artists,"lady gaga");
+    songs.toString();
     for(int i=0;i<artists.size();i++)
     {
-        artists.data[i]->toString();
+        artists.at(i)->toString();
     }
     artists.clear();
     printf("----------------------------------\n");   
 
     database.close();
 
-    getchar();
     return 0;
 }

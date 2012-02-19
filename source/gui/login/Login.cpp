@@ -79,7 +79,7 @@ int Login::pause()
 int Login::exit()
 {
     LOG_API();
-    delete root;
+    DELETE(root);
     return RET_OK;
 }
 

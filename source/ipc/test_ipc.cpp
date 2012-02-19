@@ -74,7 +74,7 @@ int main()
     assert_return (0 == WSACleanup());
 #endif
 
-    delete ipc;
+    DELETE(ipc);
     
     return 0;
 }

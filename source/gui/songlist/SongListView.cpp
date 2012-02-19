@@ -3,6 +3,7 @@
 #include<QtGui>
 #include<QtCore>
 #include"SongListView.hpp"
+#include"shared.hpp"
 
 
 
@@ -15,15 +16,29 @@ SongListView::SongListView(DataSet<Song*>& songs, QWidget * parent)
 
     this->setModel(model);
     this->setItemDelegate(delegate);
-
+    this->setFrameShape(QFrame::NoFrame); 
     this->resizeColumnsToContents();
-    this->resizeRowsToContents();
+    this->setFocusPolicy(Qt::NoFocus);
+    QPalette pll = this->palette();
+    //pll.setBrush(QPalette::Base, QBrush(QColor(125,255,255,0)));
+    this->setPalette(pll);
+    //this->setShowGrid(false); 
+
+    //this->resizeRowsToContents();
+    this->verticalHeader()->setDefaultSectionSize(32);
+    //this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
     this->setEditTriggers(QAbstractItemView::NoEditTriggers);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setMouseTracking(true);//important
     installEventFilter(this);
+
+    connect(this, SIGNAL(signalSongSelected(QString, bool)), model, SLOT(slotSongSelected(QString, bool)));
+    connect(delegate, SIGNAL(signalSongSelected(QString, bool)), model, SLOT(slotSongSelected(QString, bool)));
+
 }
 
+#if 1
 void SongListView::keyPressEvent (QKeyEvent * keyEvent)
 {
     switch(keyEvent->key())
@@ -32,24 +47,32 @@ void SongListView::keyPressEvent (QKeyEvent * keyEvent)
         case Qt::Key_Enter:
         case Qt::Key_Return:
         {
-            QVariant var=model->data(currentIndex().parent(),Qt::CheckStateRole);
+            QModelIndex newidx = currentIndex().sibling(currentIndex().row(), 3);
+            QVariant var=model->data(newidx,Qt::CheckStateRole);
             bool isFavourite=var.toBool();
             if(var.isValid())
                 isFavourite=isFavourite?false:true;
             else
                 isFavourite=true;
-            model->setData(currentIndex().parent(),isFavourite,Qt::CheckStateRole);
-            qDebug("Key_Select %d!!!\n", isFavourite);
-            qDebug()<<currentIndex().data().toString();
+            model->setData(newidx,isFavourite,Qt::CheckStateRole);
+            emit signalSongSelected(model->data(newidx.sibling(newidx.row(),0)).toString(), isFavourite);
             break;
         }
+
+        /* for IR only */
+        case Qt::Key_MediaPrevious: // page up
+            this->verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepSub);
+            break;
+        case Qt::Key_MediaNext:     // page down
+            this->verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepAdd);
+            break;
         default:
             break;
     }
 
     return QTableView::keyPressEvent(keyEvent);
 }
-
+#endif
 
 void SongListView::mouseMoveEvent(QMouseEvent * event)
 {
@@ -61,6 +84,13 @@ void SongListView::mouseMoveEvent(QMouseEvent * event)
     else{
         this->setCursor(Qt::ArrowCursor);
     }
+}
+
+
+SongListView::~SongListView()
+{
+    DELETE(delegate);
+    DELETE(model);
 }
 
 SongListItemDelegate::SongListItemDelegate(QObject * parent)
@@ -78,9 +108,22 @@ void SongListItemDelegate::paint(QPainter * painter,
     API();
     if(index.column()!=3)
     {
+#if 0
+        QStyleOptionViewItem itemOption(option);
+        if(itemOption.state & QStyle::State_HasFocus)
+            itemOption.state = itemOption.state ^ QStyle::State_HasFocus;
+        QStyledItemDelegate::paint(painter,itemOption,index);
+        QPen oldPen = painter->pen();
+        painter->setPen(pen);
+        //painter->drawLine(option.rect.topRight(),option.rect.bottomRight());
+        painter->drawLine(itemOption.rect.bottomLeft(),itemOption.rect.bottomRight());
+        painter->setPen(oldPen);
+#else
         QItemDelegate::paint(painter,option,index);
+#endif
         return;
     }
+
     const QAbstractItemModel * model=index.model();
     QVariant var=model->data(index,Qt::CheckStateRole);
     if(var.isNull())
@@ -103,15 +146,18 @@ bool SongListItemDelegate::editorEvent(QEvent * event,
         const QModelIndex & index)
 {
     API();
-    if(event->type()== QEvent::MouseButtonPress && index.column()==3)
+    if(event->type()== QEvent::MouseButtonPress && index.column()==3
+    || event->type()== QEvent::KeyPress && (static_cast<QKeyEvent*>(event))->key() == Qt::Key_Enter)
     {
-        QVariant var=model->data(index,Qt::CheckStateRole);
+        QModelIndex newidx = index.sibling(index.row(), 3);
+        QVariant var=model->data(newidx,Qt::CheckStateRole);
         bool isFavourite=var.toBool();
         if(var.isValid())
             isFavourite=isFavourite?false:true;
         else
             isFavourite=true;
-        model->setData(index,isFavourite,Qt::CheckStateRole);
+        model->setData(newidx,isFavourite,Qt::CheckStateRole);
+        emit signalSongSelected(model->data(index.sibling(index.row(),0)).toString(), isFavourite);
         return true;//I have handled the event
     }
 
@@ -126,11 +172,13 @@ SongListStandardItemModel::SongListStandardItemModel(DataSet<Song*>& songs, QObj
     this->setHorizontalHeaderLabels(headerLabels);
     this->setRowCount(songs.size());
     this->setColumnCount(4);
+
+    this->songs = &songs;
     for(int i=0; i<songs.size(); i++)
     {
-        this->setData(this->index(i, 0), QVariant(songs.data[i]->name.c_str())); //为每行设置值
-        this->setData(this->index(i, 1), QVariant(songs.data[i]->url.c_str()));
-        this->setData(this->index(i, 2), QVariant(songs.data[i]->artistName.c_str()));
+        this->setData(this->index(i, 0), QVariant(songs.at(i)->name.c_str()));
+        this->setData(this->index(i, 1), QVariant(songs.at(i)->url.c_str()));
+        this->setData(this->index(i, 2), QVariant(songs.at(i)->artistName.c_str()));
     }
 
 }
@@ -141,14 +189,36 @@ QVariant SongListStandardItemModel::data(
         int role) const
 {
     API();
-#if 0
-    int column=index.column();
 
-    if(role==Qt::DisplayRole && column!=3)
-        return tr("heyssssss");
-    if(role==Qt::ToolTipRole && column==3)
-        return tr("love");
+    /* for the time being, we put static data into the model.
+       will consider dynamic data fetching later.
+    */
+    
+#if 0 
+    if(role == Qt::CheckStateRole && index.column() != 4)
+    {
+        return QVariant();
+    }
+    
+    switch(index.column())
+    {
+        case 0:
+            return QVariant(songs->at(index.column())->name.c_str());
+        case 1:
+            return QVariant(songs->at(index.column())->url.c_str());
+        case 2:
+            return QVariant(songs->at(index.column())->artistName.c_str());
+        default:
+            break;
+    }
 #endif
+
     return QStandardItemModel::data(index,role);
 }
+
+void SongListStandardItemModel::slotSongSelected(QString song, bool selected)
+{
+    qDebug("\"%s\" %s", qPrintable(song), selected?"selected":"canceled");
+}
+
 

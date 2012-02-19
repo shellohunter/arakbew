@@ -55,5 +55,21 @@ typedef enum
 }eRetCode;
 
 
+#undef DELETE
+#define DELETE(p) if(p) {/*printf("delete %s. %s\n", #p, __FUNCTION__);*/ delete p;}
+
+#undef FREE
+#define FREE(p) if(p) {/*printf("free %s. %s\n", #p, __FUNCTION__);*/ free(p);}
+
+#undef DELETE_ARRAY
+#define DELETE_ARRAY(p) if(p) {/*printf("delete %s. %s\n", #p, __FUNCTION__);*/ delete[] p;}
+
+
+
+
+
+
+
+
 
 #endif /* SHARED_HPP */

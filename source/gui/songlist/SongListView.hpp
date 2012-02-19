@@ -11,46 +11,63 @@ class SongListStandardItemModel;
 
 class SongListView:public QTableView
 {
-    public:
-        SongListView(DataSet<Song*>& songs, QWidget * parent=0);
-        virtual ~SongListView(){}
+Q_OBJECT
 
-    protected:
-        void mouseMoveEvent(QMouseEvent * event);
+public:
+    SongListView(DataSet<Song*>& songs, QWidget * parent=0);
+    virtual ~SongListView();
 
-    private:
-        SongListItemDelegate * delegate;
-        SongListStandardItemModel * model;        
-        void keyPressEvent (QKeyEvent * keyEvent);
+protected:
+    void mouseMoveEvent(QMouseEvent * event);
+
+private:
+    SongListItemDelegate * delegate;
+    SongListStandardItemModel * model;        
+    void keyPressEvent (QKeyEvent * keyEvent);
+
+signals:
+    void signalSongSelected(QString song, bool selected);
 };
 
 class SongListItemDelegate:public QItemDelegate
 {
-    public:
-        SongListItemDelegate(QObject * parent=0);
-        virtual ~ SongListItemDelegate(){}
+Q_OBJECT
 
-        void paint(QPainter * painter,
-                const QStyleOptionViewItem & option,
-                const QModelIndex & index) const;
-        bool editorEvent(QEvent * event,
-                QAbstractItemModel * model,
-                const QStyleOptionViewItem & option,
-                const QModelIndex & index);
-    private:
-        QPixmap favouritePixmap;
-        QPixmap notFavouritePixmap;
+public:
+    SongListItemDelegate(QObject * parent=0);
+    virtual ~ SongListItemDelegate(){}
 
+    void paint(QPainter * painter,
+            const QStyleOptionViewItem & option,
+            const QModelIndex & index) const;
+    bool editorEvent(QEvent * event,
+            QAbstractItemModel * model,
+            const QStyleOptionViewItem & option,
+            const QModelIndex & index);
+private:
+    QPixmap favouritePixmap;
+    QPixmap notFavouritePixmap;
+
+signals:
+    void signalSongSelected(QString song, bool selected);
 };
 
 class SongListStandardItemModel:public QStandardItemModel
 {
-    public:
-        SongListStandardItemModel(DataSet<Song*>& songs, QObject * parent = NULL);
-        virtual ~ SongListStandardItemModel(){}
-        
-        QVariant data(const QModelIndex & index,
-                      int role=Qt::DisplayRole) const;
+Q_OBJECT
+
+public:
+    SongListStandardItemModel(DataSet<Song*>& songs, QObject * parent = NULL);
+    virtual ~ SongListStandardItemModel(){}
+    
+    QVariant data(const QModelIndex & index,
+                  int role=Qt::DisplayRole) const;
+
+private:
+    DataSet<Song*> * songs;
+
+protected slots:
+    void slotSongSelected(QString song, bool selected);
 };
 
 #endif /* SONGLISTVIEW_HPP */

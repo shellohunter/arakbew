@@ -8,7 +8,6 @@
 using namespace std;
 
 
-#define API()  printf("database: %s()\n", __FUNCTION__)
 #define SQLMSG_AUTO_LEN (-1)
 #define SQLMSG_LEN 1024
 #define SQLMSG_PARA_LEN 128
@@ -70,32 +69,28 @@ public:
 };
 
 
+/* DataSet only accept pointers which are dynamic allocated. */
 template <typename T>
-class DataSet
+class DataSet : public vector<T>
 {
 public:
     virtual ~DataSet()
     {
-        API();
         this->clear();
-    }
-    int size()
-    {
-        return data.size();
     }
     void clear()
     {
-        for(int i=0; i<data.size(); i++)
+        for(int i=0; i<this->size(); i++)
         {
-            delete data[i];
-            data[i] = NULL;
+            delete this->at(i);
         }
-        data.clear();
+        vector<T>::clear();
     }
-    vector<T> data;
+    void toString()
+    {
+        printf("%d records in all.\n", this->size());
+    }
 };
-
-
 
 class KaraokeDatabase
 {
@@ -104,14 +99,8 @@ public:
     KaraokeDatabase(string filepath);
     ~KaraokeDatabase();
 
-    sqlite3 *pDatabase;
-
     int open(string filepath);
     int close();
-
-    sqlite3* getDatabase();
-
-    int execFindCount(string SQL);
 
     int getSongNumber();
     int getArtistNumber();
@@ -129,6 +118,12 @@ public:
     int getArtist(Artist& artist, int index);
     DataSet<Artist*>& getArtists(DataSet<Artist*>& artists, string artistName);
 
+protected:
+    int execFindCount(string SQL);
+
+private:
+    sqlite3 *pDatabase;
+    sqlite3* getDatabase();
 
 };
 
