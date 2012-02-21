@@ -11,13 +11,41 @@ int cli_gm_stt(int argc, const char ** argv)
     {
         GuiManager::gm->toString();
     }
-    return RET_OK;
+    return OK;
+}
+
+
+int cli_gm_resume(int argc, const char ** argv)
+{
+    if (argc < 2)
+    {
+        LOG_ERROR("<cli> usage: gui.r <module-name> \n");
+        return FAIL;
+    }
+    
+    if(GuiManager::gm)
+    {
+        LOG_INFO("<cli> %s(%s) \n", __FUNCTION__, argv[1]);
+        GuiManager::gm->activate(argv[1]);
+    }
+    return OK;
+}
+
+int cli_gm_pause(int argc, const char ** argv)
+{
+    if(GuiManager::gm)
+    {
+        GuiManager::gm->deactivate();
+    }
+    return OK;
 }
 
 
 CliItem guiManagerCli[] = 
 {
-    {"gui.stt",         cli_gm_stt,   "print gui manager status", 0},
+    {"gui.stt",         cli_gm_stt,      "print gui manager status", 0},
+    {"gui.r",           cli_gm_resume,   "resume gui module",        0},
+    {"gui.p",           cli_gm_pause,    "pause current module",     0},
 };
 
 
@@ -40,6 +68,7 @@ GuiManager::GuiManager()
 
 GuiManager::~GuiManager()
 {
+    LOG_API();
 }
 
 
@@ -54,7 +83,7 @@ int GuiManager::append(GuiModule * module)
         QObject::connect(module, SIGNAL(signalModuleEvent(GuiEvent*)), this, SLOT(slotModuleEvent(GuiEvent*)));
         guiModules.push_back(module);
     }
-    return RET_OK;
+    return OK;
 }
 
 
@@ -77,7 +106,7 @@ int GuiManager::remove(GuiModule * module)
         }
     }
 
-    return RET_OK;
+    return OK;
 }
 
 
@@ -89,7 +118,10 @@ int GuiManager::remove(string moduleName)
 
 GuiModule * GuiManager::getActiveModule()
 {
-    return guiStack.top();
+    if(guiStack.isEmpty())
+        return NULL;
+    else
+        return guiStack.top();
 }
 
 
@@ -99,7 +131,7 @@ GuiModule * GuiManager::getModule(string moduleName)
     for(int i=0; i<guiModules.size(); i++)
     {
         if(guiModules.at(i)->name == moduleName)
-        return guiModules.at(i);
+            return guiModules.at(i);
     }
     return NULL;
 }
@@ -118,16 +150,31 @@ int GuiManager::activate(GuiModule * module)
     LOG_API();
     if(module)
     {
-        LOG_INFO("<GuiManager> activate \"%s\".\n", module->name.c_str());
-        module->resume();
-        guiStack.push(module);
+        GuiModule * current = getActiveModule();
+        if(!current)
+        {
+            LOG_INFO("<GuiManager> activate \"%s\".\n", module->name.c_str());
+            module->resume();
+            guiStack.push(module);
+        }
+        else if(current != module)
+        {
+            current->pause();
+            LOG_INFO("<GuiManager> activate \"%s\".\n", module->name.c_str());
+            module->resume();
+            guiStack.push(module);
+        }
+        else
+        {
+            LOG_INFO("<GuiManager> \"%s\" is already active.\n", module->name.c_str());
+        }
     }
     else
     {
         LOG_WARNING("<GuiManager> Null Module!\n");
-        return RET_FAIL;
+        return FAIL;
     }
-    return RET_OK;
+    return OK;
 }
 
 
@@ -135,8 +182,14 @@ int GuiManager::deactivate()
 {
     LOG_API();
     GuiModule * module = guiStack.pop();
-    LOG_INFO("<GuiManager> deactivate \"%s\".\n", module->name.c_str());
-    return RET_OK;
+    if(module)
+    {
+        LOG_INFO("<GuiManager> deactivate \"%s\".\n", module->name.c_str());
+        module->pause();
+    }
+    if(guiStack.top())
+        guiStack.top()->resume();
+    return OK;
 }
 
 
@@ -166,7 +219,7 @@ int GuiManager::broadcast(int msg, void * data)
         guiModules.at(i)->processMessage(msg, data);
     }
 
-    return RET_OK;
+    return OK;
 }
 
 

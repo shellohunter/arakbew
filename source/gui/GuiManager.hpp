@@ -28,6 +28,10 @@ typedef struct
 
 #define GUI_MODULE_LOGIN                "login"
 #define GUI_MODULE_CATEGORY             "category"
+#define GUI_MODULE_SEARCHRESULT         "searchresult"
+#define GUI_MODULE_PLAYLIST             "playlist"
+#define GUI_MODULE_PLAYER               "player"
+#define GUI_MODULE_SINGERLIST           "singerlist"
 
 
 

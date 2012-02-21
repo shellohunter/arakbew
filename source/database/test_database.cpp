@@ -6,12 +6,8 @@ int main()
     printf("sqlite wrapper test!\n");   
     
     KaraokeDatabase database;
+    database.open("./wKaraOK.db");
 
-#if WINDOWS
-    database.open("./wKaraOK.db");
-#else
-    database.open("./wKaraOK.db");
-#endif
     int songTotal = database.getSongNumber();
     printf("total song:     %d\n", songTotal);
     printf("total artist:   %d\n", database.getArtistNumber());

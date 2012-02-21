@@ -17,6 +17,8 @@ public:
     SongListView(DataSet<Song*>& songs, QWidget * parent=0);
     virtual ~SongListView();
 
+    int loadDataSet(DataSet<Song*>& songs);
+
 protected:
     void mouseMoveEvent(QMouseEvent * event);
 

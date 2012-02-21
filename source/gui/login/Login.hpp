@@ -13,6 +13,7 @@ Q_OBJECT
     
 public:
     Login(QWidget * parent = NULL);
+    ~Login();
 
     int resume();
     int pause();
@@ -31,7 +32,8 @@ private:
     QPushButton * btn_register;
     QPushButton * btn_exit;
     QWidget * parentWidget;
-    
+    KeyBoard * kb;
+
 public slots:
     void slotLogin();
     void slotRegister();

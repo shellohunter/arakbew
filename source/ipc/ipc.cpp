@@ -45,7 +45,7 @@ int IPC::init()
     {
         print_socket_error();
     }
-    assert_return(sockfd >= 0);
+    ASSERT(sockfd >= 0);
 
     sockaddr_in serverAddr;   
 
@@ -61,7 +61,7 @@ int IPC::init()
     {
         print_socket_error();
     }
-    assert_return(iRet == 0);
+    ASSERT(iRet == 0);
 
     this->start();
 

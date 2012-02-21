@@ -154,7 +154,7 @@ int KeyBoard::init(QString titleText, QWidget * parent)
     }
 
     this->setLayout(vlayout);
-    return 0;
+    return OK;
 }
 
 
@@ -168,7 +168,7 @@ int KeyBoard::open()
     editbox->setFocus();
     setFocus(keys[0]);
     this->show();
-    return RET_OK;
+    return OK;
 }
 
 
@@ -177,7 +177,7 @@ int KeyBoard::open(QString str)
     this->editbox->setText(str);
     input = str;
     open();
-    return RET_OK;
+    return OK;
 }
 
 int KeyBoard::close()
@@ -185,7 +185,7 @@ int KeyBoard::close()
     this->hide();
     this->editbox->setText("");
     emit signal_close(this->input);
-    return RET_OK;
+    return OK;
 }
 
 
@@ -203,7 +203,7 @@ int KeyBoard::setMode(KeyBoardMode mode)
         keys[i]->setMode(mode);
     }
     this->mode = mode;
-    return RET_OK;
+    return OK;
 }
 
 void KeyBoard::echo(bool on)
@@ -323,7 +323,7 @@ int KeyBoard::keyPressEvent(QObject * obj, QKeyEvent * event)
             return false;
             break;    
     }
-    return RET_OK;
+    return OK;
 }
 
 

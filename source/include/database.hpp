@@ -4,23 +4,16 @@
 #include <string>
 #include <vector>
 #include "sqlite3.h"
+#include "shared.hpp"
 
 using namespace std;
 
 
 #define SQLMSG_AUTO_LEN (-1)
-#define SQLMSG_LEN 1024
-#define SQLMSG_PARA_LEN 128
+#define SQLMSG_LEN (1024)
+#define SQLMSG_PARA_LEN (128)
 
-typedef enum
-{
-    E_OK,
-    E_FAIL,
-    E_SQLITE_FAIL,
-    E_OUT_OF_MEMORY
-    //... Please put your error code here.
-
-}E_RET_CODE;
+#define DBG_MEMLEAK (1)
 
 typedef enum
 {
@@ -52,8 +45,29 @@ public:
 
     void toString();
     bool operator==(const Song & song);    
-};
 
+#if DBG_MEMLEAK
+public:
+    Song() {counter++; LOG_INFO("+Song. %d\n",counter);}
+    Song(const Song& song)
+    {
+        index = song.index;
+        name = song.name;
+        url = song.url;
+        category = song.category;
+        artistIndex = song.artistIndex;
+        artistName = song.artistName;
+        albumName = song.albumName;
+        counter++; LOG_INFO("+Song*. %d\n",counter);
+    }
+
+    ~Song() {counter--; LOG_INFO("-Song. %d\n",counter);}
+
+private:
+    static int counter; /* for dbg only */
+
+#endif
+};
 
 class Artist
 {
@@ -63,9 +77,18 @@ public:
     string name; /* mandatory */
     eGender gender;
     string imgurl;
-    
+
     void toString();
     bool operator==(const Artist & song);    
+
+#if DBG_MEMLEAK
+public:
+    Artist() {counter++; LOG_INFO("+Artist. %d\n",counter);}
+    ~Artist() {counter--; LOG_INFO("-Artist. %d\n",counter);}
+
+private:
+    static int counter; /* for dbg only */
+#endif
 };
 
 
@@ -88,7 +111,7 @@ public:
     }
     void toString()
     {
-        printf("%d records in all.\n", this->size());
+        printf("<database> %d records in all.\n", this->size());
     }
 };
 

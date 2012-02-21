@@ -26,7 +26,7 @@ int Playback::play()
     stop(true);
 
     LOG_INFO("playing %s.\n", currentFile.c_str());
-    return RET_OK;
+    return OK;
 }
 
 int Playback::play(string & filePath)
@@ -40,7 +40,7 @@ int Playback::play(string & filePath)
         LOG_INFO("playing %s.\n", currentFile.c_str());
     }
 
-    return RET_OK;
+    return OK;
 }
 
 
@@ -48,7 +48,7 @@ int Playback::pause()
 {
     LOG_API();
 
-    return RET_OK;
+    return OK;
 }
 
 
@@ -67,7 +67,7 @@ int Playback::stop(bool sync)
         LOG_INFO("<playbakc> IDLE state, no need to stop.\n");
     }
 
-    return RET_OK;
+    return OK;
 }
 
 
@@ -75,21 +75,21 @@ int Playback::mute()
 {
     LOG_API();
 
-    return RET_OK;
+    return OK;
 }
 
 int Playback::vocal(bool enable)
 {
     LOG_API();
 
-    return RET_OK;
+    return OK;
 }
 
 int Playback::volumeUp()
 {
     LOG_API();
 
-    return RET_OK;
+    return OK;
 }
 
 
@@ -97,7 +97,7 @@ int Playback::volumeDown()
 {
     LOG_API();
 
-    return RET_OK;
+    return OK;
 }
 
 
@@ -105,7 +105,7 @@ int Playback::setVideoWindow(int x, int y, int w, int h)
 {
     LOG_API();
 
-    return RET_OK;
+    return OK;
 }
 
 string Playback::currentPath()
@@ -126,17 +126,17 @@ int Playback::setAudioTrack(int track)
 {
     LOG_API();
 
-    return RET_OK;
+    return OK;
 }
 
 int Playback::setDebugLvl()
 {
-    return RET_OK;
+    return OK;
 }
 
 int Playback::getDebugLvl()
 {
-    return RET_OK;
+    return OK;
 }
 
 void Playback::toString()

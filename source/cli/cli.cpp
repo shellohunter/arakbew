@@ -4,8 +4,7 @@
 #include <string>
 #include <string.h>
 #include <stdio.h>
-#include "cli.hpp"
-#include "log.hpp"
+#include "shared.hpp"
 
 
 
@@ -71,7 +70,7 @@ int Cli::start()
     int iRet = 0;
 
     /* in case of restart by mistake. */
-    if(started) return RET_OK;
+    if(started) return OK;
 
 #if WINDOWS
     WSADATA wsaData;
@@ -87,7 +86,7 @@ int Cli::start()
     {
         print_socket_error();
     }
-    assert_return(sockfd >= 0);
+    ASSERT(sockfd >= 0);
 
     sockaddr_in serverAddr;   
 #if WINDOWS
@@ -112,7 +111,7 @@ int Cli::start()
     }
 
     LOG_INFO("cli server listening at port %d.... \n", htons(serverAddr.sin_port));
-    assert_return(iRet == 0);
+    ASSERT(iRet == 0);
 
     PThread::start();
 
@@ -136,9 +135,9 @@ void Cli::run()
         if(clientSocket > 0)
         {
 #if WINDOWS
-            LOG_INFO("cli client [%s:%d] connected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
+            LOG_INFO("<cli> cli client [%s:%d] connected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
 #else
-            LOG_INFO("cli client [%s:%d] connected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
+            LOG_INFO("<cli> cli client [%s:%d] connected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
 #endif
         }
         else
@@ -159,9 +158,9 @@ void Cli::run()
             else if (i == 0)
             {
 #if WINDOWS
-                LOG_INFO("cli client [%s:%d] disconnected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
+                LOG_INFO("<cli> cli client [%s:%d] disconnected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
 #else
-                LOG_INFO("cli client [%s:%d] disconnected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
+                LOG_INFO("<cli> cli client [%s:%d] disconnected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
 #endif
                 break;
             }
@@ -182,7 +181,7 @@ int Cli::cli_append(CliItem * cliItems, int cliNum)
     if(!newtable)
     {
         LOG_ERROR("<cli> memory allocation failure.\n");
-        return RET_FAIL;
+        return FAIL;
     }
 
     newtable->cliNum = cliNum;
@@ -200,7 +199,7 @@ int Cli::cli_append(CliItem * cliItems, int cliNum)
         p->pNext = newtable;
     }
 
-    return RET_OK;
+    return OK;
 }
 
 
@@ -211,6 +210,10 @@ int Cli::cli_parser(char * clistring)
     char ** argv = NULL;
     char  * temp = NULL;
     vector<string> splited;
+
+    LOG_VERBOSE("<cli> %s(%s)\n", __FUNCTION__, clistring);
+
+    if(strlen(clistring) == 0) return OK;
 
     string clis(clistring);
     _cli_spliter(splited, _cli_trim(clis), " ");
@@ -248,7 +251,7 @@ int Cli::cli_parser(char * clistring)
         if(cliitem)
         {
             int ret = cliitem->action(argc, (const char **)argv);
-            if(RET_OK != ret)
+            if(OK != ret)
             {
                 LOG_ERROR("<cli> command \"%s\" error, %d!\n", cliitem->command, ret);
             }
@@ -259,10 +262,10 @@ int Cli::cli_parser(char * clistring)
         }
     }while(0);
 
-    if(argv) {free(argv); argv=NULL;};
-    if(temp) {free(temp); temp=NULL;};
+    FREE(argv);
+    FREE(temp);
 
-    return RET_OK;
+    return OK;
 }
 
 
@@ -325,7 +328,7 @@ static int _cli_list(int argc, const char ** argv)
         p=p->pNext;
     }while(p);
 
-    return RET_OK;
+    return OK;
 }
 
 static int _cli_echo(int argc, const char ** argv)
@@ -335,7 +338,7 @@ static int _cli_echo(int argc, const char ** argv)
         printf("%s ", argv[i]);
     }
     printf("\n");
-    return RET_OK;
+    return OK;
 }
 
 static int _cli_1w(int argc, const char ** argv)
@@ -344,7 +347,7 @@ static int _cli_1w(int argc, const char ** argv)
     {
         printf("%4d ",i);
     }
-    return RET_OK;
+    return OK;
 }
 
 

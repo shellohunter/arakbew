@@ -9,6 +9,7 @@
     #include <arpa/inet.h>
     #include <unistd.h>
     #include <errno.h>
+    #define SOCKET int
 #endif
 #include "shared.hpp"
 #include "ptasking.hpp"

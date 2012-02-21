@@ -5,8 +5,14 @@ src_files = Split("""
             main.cpp
             GuiManager.cpp
             Karaoke.cpp
-            Background.cpp
             login/Login.cpp
+            search/SearchResult.cpp
+            songlist/SongListView.cpp
+            singerlist/SingerList.cpp
+            player/player.cpp
+            background/Background.cpp
+            ../database/database.cpp
+            ../database/sqlite3.c
             ../log/log.cpp
             ../cli/cli.cpp
             ../ipc/ipc.cpp

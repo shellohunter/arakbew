@@ -2,19 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "sqlite3.h"
 #include "database.hpp"
-#include "shared.hpp"
 
+int Song::counter = 0; /* for dbg only */
 
 void Song::toString()
 {
-    printf("[%02d]. [%s], by [%s], url [%s]. \n",
+    LOG_INFO("<Song> %02d. [%s], [%s], by [%s]. \n",
         index, 
         name.c_str(),
         url.c_str(),
         artistName.c_str());
 }
+
 
 bool Song::operator==(const Song& song)
 {
@@ -24,9 +24,11 @@ bool Song::operator==(const Song& song)
         return false;
 }
 
+int Artist::counter = 0; /* for dbg only */
+
 void Artist::toString()
 {
-    printf("[%02d]. [%s], [%d], url [%s]. \n",
+    LOG_INFO("<Aritist> %02d. [%s], [%d], url [%s]. \n",
         index, 
         name.c_str(),
         gender,
@@ -44,18 +46,18 @@ bool Artist::operator==(const Artist& artist)
 
 KaraokeDatabase::KaraokeDatabase()
 {
-    API();
+    LOG_API();
 } 
 
 KaraokeDatabase::KaraokeDatabase(string filepath)
 {
-    API();
+    LOG_API();
     open(filepath);
 } 
 
 KaraokeDatabase::~KaraokeDatabase()
 {   
-    API();
+    LOG_API();
     close();
 } 
 
@@ -65,32 +67,32 @@ int KaraokeDatabase::open(string filepath)
     sqlite3 *pDatabase = NULL;
     int rc = SQLITE_OK;
 
-    API();
+    LOG_API();
     rc = sqlite3_open(filepath.c_str(), &pDatabase);
     if( rc != SQLITE_OK ){
-        printf("<SQlite> Can not open %s\n", filepath.c_str());
-        printf("<SQlite> Error message is %s\n", sqlite3_errmsg(pDatabase));
+        LOG_ERROR("<SQlite> Can not open %s\n", filepath.c_str());
+        LOG_ERROR("<SQlite> Error message is %s\n", sqlite3_errmsg(pDatabase));
         sqlite3_close(pDatabase);
         return E_SQLITE_FAIL;
     }
     else
     {
-        printf("<SQlite> Open %s sucessfully!!\n", filepath.c_str());
+        LOG_INFO("<SQlite> Open %s sucessfully!!\n", filepath.c_str());
         this->pDatabase = pDatabase;
     }
 
-    return E_OK;
+    return OK;
 }
 
 
 
 int KaraokeDatabase::close()
 {
-    API();
+    LOG_API();
     //close datebase
     sqlite3_close(this->pDatabase);
     this->pDatabase = NULL;
-    return E_OK;
+    return OK;
 }
 
 
@@ -109,11 +111,11 @@ int KaraokeDatabase::execFindCount(string SQL)
     char **dbResult;
     int nRow, nColumn;
 
-    API();
+    LOG_API();
 
     if (this->pDatabase == NULL)
     {
-        printf("<SQlite> Database error!\n");
+        LOG_ERROR("<SQlite> Database error!\n");
         return E_SQLITE_FAIL;
     }
 
@@ -132,7 +134,7 @@ int KaraokeDatabase::execFindCount(string SQL)
     else
     {
         iCnt = 0;
-        printf("Query Error: %s\n", errmsg);
+        LOG_ERROR("<SQlite> Query Error: %s\n", errmsg);
     }
 
     //free dbResult
@@ -165,15 +167,15 @@ int KaraokeDatabase::getSong(Song & song, int index)
     sqlite3_stmt *pStmt = NULL;
     int iColumnIdx, iColumnCnt;
 
-    API();
+    LOG_API();
     if(index >= this->getSongNumber())
     {
-        return E_FAIL;
+        return FAIL;
     }
 
     if (this->pDatabase == NULL)
     {
-        printf("Database error!\n");
+        LOG_ERROR("<SQlite> Database error!\n");
         return E_SQLITE_FAIL;
     }
 
@@ -181,7 +183,7 @@ int KaraokeDatabase::getSong(Song & song, int index)
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        printf("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
         return E_OUT_OF_MEMORY;
     }
     memset(pSqlMsg, 0,SQLMSG_LEN * sizeof(char));
@@ -201,7 +203,7 @@ int KaraokeDatabase::getSong(Song & song, int index)
                 0);
     if( rc != SQLITE_OK )
     {
-        printf("Query Error: SQLITE ID %d\n", rc);
+        LOG_ERROR("<SQlite> Query Error: SQLITE ID %d\n", rc);
         rc = E_SQLITE_FAIL;
     }
     else
@@ -257,11 +259,11 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, string songName
     sqlite3_stmt *pStmt = NULL;
     int iColumnIdx, iColumnCnt;
 
-    API();
+    LOG_API();
 
     if (this->pDatabase == NULL)
     {
-        printf("Database error!\n");
+        LOG_ERROR("<SQlite> Database error!\n");
         //return E_SQLITE_FAIL;
         return songs;
     }
@@ -270,7 +272,7 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, string songName
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        printf("Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
         //return E_OUT_OF_MEMORY;
         return songs;
     }
@@ -286,7 +288,7 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, string songName
     strncpy(pPara, "%", 1);
     strncat(pPara, songName.c_str(), strlen(songName.c_str()));
     strncat(pPara, "%", 1);
-    printf("<SQlite> Input parameter is %s\n", pPara);
+    LOG_INFO("<SQlite> Input parameter is %s\n", pPara);
 
     /* exec query */
     rc = sqlite3_prepare(
@@ -297,7 +299,7 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, string songName
                 0);
     if( rc != SQLITE_OK )
     {
-        printf("Query Error: SQLITE ID %d\n", rc);
+        LOG_ERROR("<SQlite> Query Error: SQLITE ID %d\n", rc);
         rc = E_SQLITE_FAIL;
     }
     else
@@ -364,11 +366,11 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, int startIndex,
     sqlite3_stmt *pStmt = NULL;
     int iColumnIdx, iColumnCnt;
 
-    API();
+    LOG_API();
 
     if (this->pDatabase == NULL)
     {
-        printf("Database error!\n");
+        LOG_ERROR("<SQlite> Database error!\n");
         //return E_SQLITE_FAIL;
         return songs;
     }
@@ -377,7 +379,7 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, int startIndex,
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        printf("Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
         //return E_OUT_OF_MEMORY;
         return songs;
     }
@@ -398,7 +400,7 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, int startIndex,
                 0);
     if( rc != SQLITE_OK )
     {
-        printf("Query Error: SQLITE ID %d\n", rc);
+        LOG_ERROR("<SQlite> Query Error: SQLITE ID %d\n", rc);
         rc = E_SQLITE_FAIL;
     }
     else
@@ -463,7 +465,7 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, int startIndex,
 DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, int artistIndex)
 {
     Artist artist;
-    if(E_OK == getArtist(artist, artistIndex))
+    if(OK == getArtist(artist, artistIndex))
     {
         return getSongsByArtist(songs, artist.name);
     }
@@ -482,11 +484,11 @@ DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, string 
     sqlite3_stmt *pStmt = NULL;
     int iColumnIdx, iColumnCnt;
 
-    API();
+    LOG_API();
 
     if (this->pDatabase == NULL)
     {
-        printf("Database error!\n");
+        LOG_ERROR("<SQlite> Database error!\n");
         //return E_SQLITE_FAIL;
         return songs;
     }
@@ -495,7 +497,7 @@ DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, string 
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        printf("Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
         //return E_OUT_OF_MEMORY;
         return songs;
     }
@@ -514,7 +516,7 @@ DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, string 
     strncpy(pPara, "%", 1);
     strncat(pPara, artistName.c_str(), strlen(artistName.c_str()));
     strncat(pPara, "%", 1);
-    printf("<SQlite> Input parameter is %s\n", pPara);
+    LOG_INFO("<SQlite> Input parameter is %s\n", pPara);
 
     /* exec query */
     rc = sqlite3_prepare(
@@ -525,7 +527,7 @@ DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, string 
                 0);
     if( rc != SQLITE_OK )
     {
-        printf("Query Error: SQLITE ID %d\n", rc);
+        LOG_ERROR("<SQlite> Query Error: SQLITE ID %d\n", rc);
         rc = E_SQLITE_FAIL;
     }
     else
@@ -586,7 +588,7 @@ DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, string 
 
 DataSet<Song*>& KaraokeDatabase::getSongsByAlbumIndex(DataSet<Song*>& songs, int albumIndex)
 {
-    API();
+    LOG_API();
     return songs;
 }
 
@@ -598,15 +600,15 @@ int KaraokeDatabase::getArtist(Artist & artist, int index)
     sqlite3_stmt *pStmt = NULL;
     int iColumnIdx, iColumnCnt, iTmp = 0;
 
-    API();
+    LOG_API();
     if(index >= this->getSongNumber())
     {
-        return E_FAIL;
+        return FAIL;
     }
 
     if (this->pDatabase == NULL)
     {
-        printf("Database error!\n");
+        LOG_ERROR("<SQlite> Database error!\n");
         return E_SQLITE_FAIL;
     }
 
@@ -614,7 +616,7 @@ int KaraokeDatabase::getArtist(Artist & artist, int index)
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        printf("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_INFO("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
         return E_OUT_OF_MEMORY;
     }
     memset(pSqlMsg, 0,SQLMSG_LEN * sizeof(char));
@@ -634,7 +636,7 @@ int KaraokeDatabase::getArtist(Artist & artist, int index)
                 0);
     if( rc != SQLITE_OK )
     {
-        printf("Query Error: SQLITE ID %d\n", rc);
+        LOG_ERROR("<SQlite> Query Error: SQLITE ID %d\n", rc);
         rc = E_SQLITE_FAIL;
     }
     else
@@ -697,11 +699,11 @@ DataSet<Artist*>& KaraokeDatabase::getArtists(DataSet<Artist*>& artists, string 
     sqlite3_stmt *pStmt = NULL;
     int iColumnIdx, iColumnCnt, iTmp = 0;
 
-    API();
+    LOG_API();
 
     if (this->pDatabase == NULL)
     {
-        printf("Database error!\n");
+        LOG_ERROR("<SQlite> Database error!\n");
         //return E_SQLITE_FAIL;
         return artists;
     }
@@ -710,7 +712,7 @@ DataSet<Artist*>& KaraokeDatabase::getArtists(DataSet<Artist*>& artists, string 
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        printf("Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
         //return E_OUT_OF_MEMORY;
         return artists;
     }
@@ -728,7 +730,7 @@ DataSet<Artist*>& KaraokeDatabase::getArtists(DataSet<Artist*>& artists, string 
     strncpy(pPara, "%", 1);
     strncat(pPara, artistName.c_str(), strlen(artistName.c_str()));
     strncat(pPara, "%", 1);
-    printf("<SQlite> Input parameter is %s\n", pPara);
+    LOG_INFO("<SQlite> Input parameter is %s\n", pPara);
 
     /* exec query */
     rc = sqlite3_prepare(
@@ -739,7 +741,7 @@ DataSet<Artist*>& KaraokeDatabase::getArtists(DataSet<Artist*>& artists, string 
                 0);
     if( rc != SQLITE_OK )
     {
-        printf("Query Error: SQLITE ID %d\n", rc);
+        LOG_ERROR("<SQlite> Query Error: SQLITE ID %d\n", rc);
         rc = E_SQLITE_FAIL;
     }
     else

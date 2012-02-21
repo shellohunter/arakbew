@@ -152,6 +152,7 @@ void * cli_rsp(void * data)
 int main_tcp(int argc, char ** argv)
 {
     int ret = 0;
+    SOCKET sockfd;
 #if WINDOWS
     WORD wVersionRequested;
     WSADATA wsaData;
@@ -170,7 +171,9 @@ int main_tcp(int argc, char ** argv)
     }
 #endif
 
-    SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
+__retry:
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if(sockfd <= 0)
     {
         print_socket_error();
@@ -194,16 +197,16 @@ int main_tcp(int argc, char ** argv)
     serverAddr.sin_port = htons(6789);
     int nlen=sizeof(serverAddr);
 
-    do {
-        printf("[connecting to %s:%d ......]\n", ip, 6789);
-        ret = connect(sockfd,(sockaddr*)&serverAddr,sizeof(sockaddr));
-        if(ret < 0)
-        {
-            printf("[connection NG, will retry in 5 seconds!]\n", ip, 6789);
-            print_socket_error();
-            sleep(5000);
-        }
-    }while(ret !=0);
+    printf("[connecting to %s:%d ......]\n", ip, 6789);
+    ret = connect(sockfd,(sockaddr*)&serverAddr,sizeof(sockaddr));
+    if(ret < 0)
+    {
+        print_socket_error();
+        printf("[connection NG, will retry in 5 seconds!]\n");
+        close(sockfd);
+        sleep(5000);
+        goto __retry;
+    }
 
     printf("[connection OK , server at [%s:%d]]\n", ip, 6789);
 
@@ -221,9 +224,14 @@ int main_tcp(int argc, char ** argv)
         if(fgets(buffer, sizeof(buffer), stdin))
 #endif
         {
-            if( send(sockfd, buffer, sizeof(buffer), 0) < 0)
+            if(send(sockfd, buffer, sizeof(buffer), 0) < 0)
             {
                 print_socket_error();
+                /* lost connection to the server? */
+                printf("[connection NG, will retry in 5 seconds!]\n");
+                close(sockfd);
+                sleep(5000);
+                goto __retry;
             }
             printf(">");
         }

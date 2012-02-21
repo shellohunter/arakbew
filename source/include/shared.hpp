@@ -12,35 +12,20 @@
 #include <errno.h>
 #endif
 
+#include "log.hpp"
+#include "cli.hpp"
+#include "ipc.hpp"
+#include "ptasking.hpp"
+
+
 using namespace std;
-
-#define assert_return(__exp__)\
-    do{\
-        if(!(__exp__))\
-        {\
-            printf("Assert(\"%s\") fail! line %d, %s.\n",#__exp__, __LINE__, __FUNCTION__);\
-            return -1;\
-        }\
-    }while(0)
-
-
-#define assert_break(__exp__)\
-    do{\
-        if(!(__exp__))\
-        {\
-            printf("Assert(\"%s\") fail! line %d, %s.\n",#__exp__, __LINE__, __FUNCTION__);\
-            break;\
-        }\
-    }while(0)
-
-#define API()  printf("%s()\n", __FUNCTION__)
 
 
 #if WINDOWS /* win32 */
     #define sleep(ms) Sleep(ms)
-    #define print_socket_error() printf("socket error %d. %s, L%d.\n", WSAGetLastError(), __FUNCTION__, __LINE__)
+    #define print_socket_error() LOG_VERBOSE("<socket> error %d. %s, L%d.\n", WSAGetLastError(), __FUNCTION__, __LINE__)
 #else /* linux */
-    #define print_socket_error() printf("socket error %s. %s, L%d.\n", strerror(errno), __FUNCTION__, __LINE__)
+    #define print_socket_error() LOG_VERBOSE("<socket error> %s. %s, L%d.\n", strerror(errno), __FUNCTION__, __LINE__)
     typedef struct sockaddr_in sockaddr_in;
     typedef struct sockaddr sockaddr;
     #define SOCKET int
@@ -49,20 +34,23 @@ using namespace std;
 
 typedef enum
 {
-    RET_OK = 0,
-    RET_FAIL = -1
+    OK,
+    FAIL = -1,
+    E_SQLITE_FAIL = -2,
+    E_OUT_OF_MEMORY = -3,
     //... Please put your error code here.
-}eRetCode;
+
+}E_RET_CODE;
 
 
 #undef DELETE
-#define DELETE(p) if(p) {/*printf("delete %s. %s\n", #p, __FUNCTION__);*/ delete p;}
+#define DELETE(p) if(p) {LOG_VERBOSE("delete %s. %s\n", #p, __FUNCTION__); delete p;}
 
 #undef FREE
-#define FREE(p) if(p) {/*printf("free %s. %s\n", #p, __FUNCTION__);*/ free(p);}
+#define FREE(p) if(p) {LOG_VERBOSE("free %s. %s\n", #p, __FUNCTION__); free(p);}
 
 #undef DELETE_ARRAY
-#define DELETE_ARRAY(p) if(p) {/*printf("delete %s. %s\n", #p, __FUNCTION__);*/ delete[] p;}
+#define DELETE_ARRAY(p) if(p) {LOG_VERBOSE("delete %s. %s\n", #p, __FUNCTION__); delete[] p;}
 
 
 

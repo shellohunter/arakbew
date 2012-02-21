@@ -29,7 +29,8 @@ env.Append(CPPPATH=['#source/include'])
 env.Append(LIBPATH=['#source/library'])
 
 if sys.platform=="win32":
-    env['QT4DIR']   = "D:/Workspace/QT/4.6.2" # the path to your own QT folder
+    #env['QT4DIR']   = "D:/Workspace/QT/4.6.2" # the path to your own QT folder
+    env['QT4DIR']   = "D:/Software/QT4.7.3" # the path to your own QT folder
     env.Append(CCFLAGS="-DWINDOWS")
     env.Append(CPPPATH=['#source/include/win32'])
     env.Append(LIBPATH=['#source/library/win32'])

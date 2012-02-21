@@ -22,8 +22,7 @@ static void IPCHandler(IPCNotify * notify)
 }
 
 
-Karaoke::Karaoke() 
-    : background()
+Karaoke::Karaoke() : background()
 {
     LOG_API();
 
@@ -39,8 +38,11 @@ Karaoke::Karaoke()
     log_init();
 
     /* create gui modules */
-    Login * login = new Login(&background);
-    guiManager.append(login);
+    guiManager.append(new Login(&background));
+    guiManager.append(new SearchResult(&background));
+    guiManager.append(new Player(&background));
+    guiManager.append(new SingerList(&background));
+
 }
 
 int Karaoke::resume()

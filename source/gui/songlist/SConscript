@@ -2,8 +2,13 @@ Import('env')
 
 qrccpp = env.Qrc4("SongListView")
 src_files = Split("""SongListView.cpp
+                     test_songlist.cpp
+                     ../../log/log.cpp
+                     ../../ipc/ipc.cpp
+                     ../../ptasking/ptasking.cpp
+                     ../../cli/cli.cpp
                      ../../database/database.cpp
                      ../../database/sqlite3.c
-                     test_songlist.cpp""")
+""")
 test_songlist=env.Program('test_songlist',src_files+qrccpp)
 env.Install('#build',test_songlist)

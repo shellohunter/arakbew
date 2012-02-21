@@ -8,8 +8,11 @@
 
 #include "shared.hpp"
 #include "GuiManager.hpp"
-#include "Background.hpp"
+#include "background/Background.hpp"
 #include "login/Login.hpp"
+#include "search/SearchResult.hpp"
+#include "singerlist/SingerList.hpp"
+#include "player/player.hpp"
 
 
 class Karaoke
@@ -18,10 +21,10 @@ public:
     Karaoke();
     ~Karaoke()                  {};
 
-    int init()                  {return RET_OK;}
+    int init()                  {return OK;}
     int pause();
     int resume();
-    int exit()                  {return RET_OK;}
+    int exit()                  {return OK;}
 
 private:
     GuiManager guiManager;

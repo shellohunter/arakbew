@@ -21,7 +21,7 @@ static int _cli_test1(int argc, const char ** argv)
         "Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live.\n"
         "               ----- Rick Osborne\n";
     printf(comment);;
-    return RET_OK;
+    return OK;
 }
 
 static int _cli_test2(int argc, const char ** argv)
@@ -33,7 +33,7 @@ static int _cli_test2(int argc, const char ** argv)
         printf("%s ",argv[i]);
     }
     printf("\n");
-    return RET_OK;
+    return OK;
 }
 
 CliItem _my_cli_table_[] = 
@@ -96,7 +96,7 @@ int main(int argc, char ** argv)
     {
         print_socket_error();
     }
-    assert_return(sockfd >= 0);
+    ASSERT(sockfd >= 0);
 
     sockaddr_in serverAddr;
     memset(&serverAddr,0,sizeof(serverAddr));
@@ -131,9 +131,9 @@ int main(int argc, char ** argv)
         }
         counter++;
     }
-    assert_return (0 == close(sockfd));
+    ASSERT(0 == close(sockfd));
 #if WINDOWS
-    assert_return (0 == WSACleanup());
+    ASSERT(0 == WSACleanup());
 #endif
 
     return 0;

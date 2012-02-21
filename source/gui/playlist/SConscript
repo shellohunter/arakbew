@@ -1,0 +1,15 @@
+Import("env")
+
+src = Split("""
+            test_playlist.cpp
+            ../../log/log.cpp
+            ../../ipc/ipc.cpp
+            ../../ptasking/ptasking.cpp
+            ../../cli/cli.cpp
+            ../../database/database.cpp
+            ../../database/sqlite3.c
+            """)
+
+test_playlist=env.Program("test_playlist", src)
+env.Install('#build', test_playlist)
+

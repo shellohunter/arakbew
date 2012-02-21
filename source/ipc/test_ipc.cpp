@@ -28,7 +28,7 @@ int main()
     WSADATA wsaData;
     wVersionRequested = MAKEWORD( 2, 0 ); 
     ret = WSAStartup( wVersionRequested, &wsaData );
-    assert_return( 0 == ret );
+    ASSERT( 0 == ret );
 
     if (LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 0 ) 
     {
@@ -42,7 +42,7 @@ int main()
     {
         print_socket_error();
     }
-    assert_return(sockfd >= 0);
+    ASSERT(sockfd >= 0);
 
 #if 0
     bool opt = true;
@@ -69,9 +69,9 @@ int main()
         }
         counter++;
     }
-    assert_return (0 == close(sockfd));
+    ASSERT (0 == close(sockfd));
 #if WINDOWS
-    assert_return (0 == WSACleanup());
+    ASSERT (0 == WSACleanup());
 #endif
 
     DELETE(ipc);

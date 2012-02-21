@@ -26,7 +26,7 @@ static int _cli_set_log_lvl(int argc, const char ** argv)
     if ((argc < 2) || (argv == NULL))
     {
         printf("example: sdl aei\n");
-        return RET_FAIL;
+        return FAIL;
     }
 
     p = argv[1];
@@ -35,7 +35,7 @@ static int _cli_set_log_lvl(int argc, const char ** argv)
          (strchr(p, 'N') != NULL)) &&
         (strlen(p) > 1))
     {
-        return RET_FAIL;
+        return FAIL;
     }
 
     while (*p != 0)
@@ -89,7 +89,7 @@ static int _cli_set_log_lvl(int argc, const char ** argv)
 
     set_log_lvl(newLevel);
 
-    return RET_OK;
+    return OK;
 }
 
 
@@ -104,7 +104,7 @@ static int _cli_get_log_lvl(int argc, const char **argv)
     if(_log_level_ & LOG_LEVEL_WARNING) strcat(loglvl, "w");
     if(!_log_level_)                    strcat(loglvl, "n");
     printf("<cli> current log level [%s].\n", loglvl);
-    return RET_OK;
+    return OK;
 }
 
 CliItem log_cli[] = 

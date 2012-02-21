@@ -4,13 +4,14 @@
 #include<QtCore>
 #include"SongListView.hpp"
 #include"shared.hpp"
+#include"log.hpp"
 
 
 
 SongListView::SongListView(DataSet<Song*>& songs, QWidget * parent)
     :QTableView(parent)
 {
-    API();
+    LOG_API();
     delegate=new SongListItemDelegate();
     model=new SongListStandardItemModel(songs);    
 
@@ -38,7 +39,6 @@ SongListView::SongListView(DataSet<Song*>& songs, QWidget * parent)
 
 }
 
-#if 1
 void SongListView::keyPressEvent (QKeyEvent * keyEvent)
 {
     switch(keyEvent->key())
@@ -72,7 +72,7 @@ void SongListView::keyPressEvent (QKeyEvent * keyEvent)
 
     return QTableView::keyPressEvent(keyEvent);
 }
-#endif
+
 
 void SongListView::mouseMoveEvent(QMouseEvent * event)
 {
@@ -96,16 +96,33 @@ SongListView::~SongListView()
 SongListItemDelegate::SongListItemDelegate(QObject * parent)
     :QItemDelegate(parent)
 {
-    API();
+    LOG_API();
     favouritePixmap=QPixmap(":/images/song_select.png");
     notFavouritePixmap=QPixmap("");
 }
+
+int SongListView::loadDataSet(DataSet<Song*>& songs)
+{
+    ASSERT(model);
+
+    // remove previous data?
+    // model->reset();
+    
+    for(int i=0; i<songs.size(); i++)
+    {
+        model->setData(model->index(i, 0), QVariant(songs.at(i)->name.c_str()));
+        model->setData(model->index(i, 1), QVariant(songs.at(i)->url.c_str()));
+        model->setData(model->index(i, 2), QVariant(songs.at(i)->artistName.c_str()));
+    }
+    return OK;
+}
+
 
 void SongListItemDelegate::paint(QPainter * painter,
         const QStyleOptionViewItem & option,
         const QModelIndex & index) const
 {
-    API();
+    LOG_API();
     if(index.column()!=3)
     {
 #if 0
@@ -145,7 +162,7 @@ bool SongListItemDelegate::editorEvent(QEvent * event,
         const QStyleOptionViewItem & /*option*/,
         const QModelIndex & index)
 {
-    API();
+    LOG_API();
     if(event->type()== QEvent::MouseButtonPress && index.column()==3
     || event->type()== QEvent::KeyPress && (static_cast<QKeyEvent*>(event))->key() == Qt::Key_Enter)
     {
@@ -188,10 +205,10 @@ QVariant SongListStandardItemModel::data(
         const QModelIndex & index,
         int role) const
 {
-    API();
+    LOG_API();
 
-    /* for the time being, we put static data into the model.
-       will consider dynamic data fetching later.
+    /* for the time being, I put static data into the model.
+       if this causes performance issue, then I will consider dynamic data fetching.
     */
     
 #if 0 
@@ -218,7 +235,7 @@ QVariant SongListStandardItemModel::data(
 
 void SongListStandardItemModel::slotSongSelected(QString song, bool selected)
 {
-    qDebug("\"%s\" %s", qPrintable(song), selected?"selected":"canceled");
+    LOG_INFO("<songlistview> \"%s\" %s", qPrintable(song), selected?"selected":"canceled");
 }
 
 

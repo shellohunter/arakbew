@@ -11,6 +11,7 @@
 #define LOG_LEVEL_TRACE   (0x1<<3)
 #define LOG_LEVEL_ASSERT  (0x1<<4)
 #define LOG_LEVEL_WARNING (0x1<<5)
+#define LOG_LEVEL_VERBOSE (0x1<<6)
 
 
 
@@ -49,7 +50,7 @@
     }while(0)
 
 
-#define LOG_ASSERT(_stmt) \
+#define ASSERT(_stmt) \
     do{ \
         if(get_log_lvl()&LOG_LEVEL_ASSERT) \
         { \
@@ -70,6 +71,14 @@
             } \
         }while(0)
 
+#define LOG_VERBOSE(...) \
+        do \
+        { \
+            if(get_log_lvl()&LOG_LEVEL_VERBOSE) \
+            {\
+                printf(__VA_ARGS__);\
+            } \
+        }while(0)
 
 #define CHK_FAIL(iRet,iRet_Return) \
     do {                                                                    \

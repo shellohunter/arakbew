@@ -3,6 +3,7 @@
 #include "log.hpp"
 
 #include "../GuiManager.hpp"
+#include "../background/Background.hpp"
 #include "Login.hpp"
 
 Login::Login(QWidget * parent) : GuiModule(GUI_MODULE_LOGIN)
@@ -11,6 +12,10 @@ Login::Login(QWidget * parent) : GuiModule(GUI_MODULE_LOGIN)
     init();
 }
 
+Login::~Login()
+{
+    exit();
+}
 
 int Login::init()
 {
@@ -22,17 +27,18 @@ int Login::init()
     QPalette palette = root->palette();
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/dialog_background.png")));
     root->setPalette(palette);
+    //root->resize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    KeyBoard * kb = new KeyBoard("");
-    label_title     = new QLabel(QObject::tr("Welcome to karaoke!"));
-    label_username  = new QLabel(QObject::tr("username"));
-    label_password  = new QLabel(QObject::tr("password"));
-    edit_username   = new InputLine(kb);
-    edit_password   = new InputLine(kb);
+    kb = new KeyBoard("");
+    label_title     = new QLabel(QObject::tr("Welcome to karaoke!"), root);
+    label_username  = new QLabel(QObject::tr("username"), root);
+    label_password  = new QLabel(QObject::tr("password"), root);
+    edit_username   = new InputLine(kb, root);
+    edit_password   = new InputLine(kb, root);
     edit_password->echo(false);
-    btn_login       = new QPushButton(QObject::tr("Login"));
-    btn_register    = new QPushButton(QObject::tr("Register"));
-    btn_exit        = new QPushButton(QObject::tr("Exit"));
+    btn_login       = new QPushButton(QObject::tr("Login"), root);
+    btn_register    = new QPushButton(QObject::tr("Register"), root);
+    btn_exit        = new QPushButton(QObject::tr("Exit"), root);
 
     QGridLayout  *layoutGrid = new QGridLayout();
     layoutGrid->addWidget(label_title, 0,0,1,3);
@@ -45,26 +51,27 @@ int Login::init()
     layoutGrid->addWidget(btn_exit, 3,2);
 
     root->setLayout(layoutGrid);
-    qDebug("%dx%d %dx%d\n", root->width(), root->height(), parentWidget->width(), parentWidget->height());
     root->move((parentWidget->width()-root->width())/2, (parentWidget->height()-root->height())/2);
 
     edit_username->setText("test");
     edit_password->setText("test");
-    btn_login->setFocus();
 
     QObject::connect(btn_login, SIGNAL(clicked()), this, SLOT(slotLogin()));
     QObject::connect(btn_register, SIGNAL(clicked()), this, SLOT(slotRegister()));
     QObject::connect(btn_exit, SIGNAL(clicked()), this, SLOT(slotExit()));
 
-    return RET_OK;
+    root->hide();
+
+    return OK;
 }
 
 
 int Login::resume()
 {
     LOG_API();
+    btn_login->setFocus();
     root->show();
-    return RET_OK;
+    return OK;
 }
 
 
@@ -72,7 +79,7 @@ int Login::pause()
 {
     LOG_API();
     root->hide();
-    return RET_OK;
+    return OK;
 }
 
 
@@ -80,13 +87,13 @@ int Login::exit()
 {
     LOG_API();
     DELETE(root);
-    return RET_OK;
+    return OK;
 }
 
 int Login::processMessage(int msg, void * data)
 {
     LOG_API();
-    return RET_OK;
+    return OK;
 }
 
 
