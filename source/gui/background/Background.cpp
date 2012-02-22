@@ -10,7 +10,7 @@ Background::Background(QWidget * parent)
 
     LOG_API();
 
-#if 1
+#ifndef WINDOWS
     this->setWindowFlags(Qt::FramelessWindowHint);
 #endif
     this->setFixedSize(SCREEN_WIDTH,SCREEN_HEIGHT);

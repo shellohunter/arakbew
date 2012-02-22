@@ -1,5 +1,6 @@
 
 
+#include <stdlib.h>
 
 #include "../GuiManager.hpp"
 #include "shared.hpp"
@@ -11,19 +12,35 @@
 
 
 SingerIcon::SingerIcon(QWidget * parent)
-    : QWidget(parent), label_picture(this), label_text(this)
+    : QWidget(parent)
 {
+    this->setAutoFillBackground(true);
     this->setGeometry(0,0,170,200);
-    label_picture.setGeometry(10,10,150,150);
-    label_text.setGeometry(10,160,150,30);
-    this->setFocus(false);
+    label_picture = new QLabel(this);
+    label_picture->setGeometry(10,10,150,150);
+    label_picture->setAutoFillBackground(true);
+
+    label_text = new QLabel(this);
+    LOG_INFO("label_text x%d,y%d,w%d,h%d,\n",
+        label_text->geometry().x(),
+        label_text->geometry().y(),
+        label_text->geometry().width(),
+        label_text->geometry().height());
+    label_text->setGeometry(10,170,150,30);
+    LOG_INFO("label_text x%d,y%d,w%d,h%d,\n",
+        label_text->geometry().x(),
+        label_text->geometry().y(),
+        label_text->geometry().width(),
+        label_text->geometry().height());
+    label_text->setAlignment(Qt::AlignCenter);
+    this->highlight(false);
 }
 
 
-void SingerIcon::setFocus(bool focus)
+void SingerIcon::highlight(bool hlt)
 {
     QPalette palette = this->palette();
-    if(focus)
+    if(hlt)
         palette.setBrush(QPalette::Background, QBrush(QColor(255,255,255,255)));
     else
         palette.setBrush(QPalette::Background, QBrush(QColor(0,255,255,255)));
@@ -34,18 +51,18 @@ void SingerIcon::setFocus(bool focus)
 
 void SingerIcon::setPicture(QString path)
 {
-    QPalette palette = label_picture.palette();
+    QPalette palette = label_picture->palette();
     if(path.isEmpty())
         palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/unknown_avatar.png")));
     else
         palette.setBrush(QPalette::Background, QBrush(QPixmap(path)));
-    label_picture.setPalette(palette);
+    label_picture->setPalette(palette);
 }
 
 
 void SingerIcon::setText(QString text)
 {
-    label_picture.setText(text);
+    label_picture->setText(text);
 }
 
 
@@ -82,7 +99,24 @@ int SingerList::init()
     root->setAutoFillBackground(true);
     root->setGeometry(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
     root->setFocusPolicy(Qt::NoFocus);
-    root->setFocus(Qt::OtherFocusReason);
+
+    realFocus = new QPushButton(root);
+    realFocus->setObjectName("singerlistfocus");
+    realFocus->setGeometry(0,0,0,0);
+    realFocus->installEventFilter(this);
+
+
+    lbl_keyword  = new QLabel("Male Singers", root);
+    lbl_keyword->setGeometry(10, 10, 600, 30);
+    btn_return   = new QPushButton("Back", root);
+    btn_return->setGeometry(10, 10, 50, 30);
+
+    lbl_pagenum  = new QLabel("7/12", root);
+    lbl_pagenum->setGeometry(500, 760, 50, 30);
+    btn_prevPage = new QPushButton("Previous", root);
+    btn_prevPage->setGeometry(600, 760, 50, 30);
+    btn_nextPage = new QPushButton("Next", root);
+    btn_nextPage->setGeometry(700, 760, 50, 30);
 
     for(int i=0; i<2; i++)
     {
@@ -90,20 +124,8 @@ int SingerList::init()
         {
             singerIcon[i*4+j] = new SingerIcon(root);
             singerIcon[i*4+j]->move(30+170*j,20+200*i);
-            singerIcon[i*4+j]->setPicture(QString(":/images/unknown-avatar.png"));
+            singerIcon[i*4+j]->setPicture(QString(":/images/unknown_avatar.png"));
             singerIcon[i*4+j]->setText("Some One");
-#if 0
-            btn_avatar[i*4+j] = new QPushButton(root);
-            btn_name[i*4+j]   = new QPushButton("Some One",root);
-
-            btn_avatar[i*4+j]->setGeometry(120+170*j,25+200*i,150,150);
-            btn_name[i*4+j]->setGeometry(120+170*j,25+200*i+150,150,30);
-
-            QPalette palette = btn_avatar[i*4+j]->palette();
-            palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/unknown-avatar.jpg")));
-            btn_avatar[i*4+j]->setPalette(palette);
-            connect(btn_avatar[i*4+j], SIGNAL(clicked()), this, SLOT(slotSingerSelected()));
-#endif
         }
     }
 
@@ -115,6 +137,8 @@ int SingerList::init()
 int SingerList::resume()
 {
     LOG_API();
+    singerIcon[0]->highlight(true);
+    realFocus->setFocus(Qt::OtherFocusReason);
     root->show();
     return OK;
 }
@@ -146,6 +170,42 @@ int SingerList::processMessage(int msg, void * data)
 int SingerList::keyPressEvent(QObject * obj, QKeyEvent * event)
 {
     LOG_API();
+    static QWidget * fakeFocus = singerIcon[0];
+    static bool      icon_hlted = true;
+
+    if(icon_hlted)
+    {
+        static int cur_idx = 0;
+        int        new_idx = cur_idx;
+        LOG_VERBOSE("cur hlt idx %d.\n", cur_idx);
+        switch(event->key())
+        {
+            case Qt::Key_Up:
+                new_idx = abs(cur_idx-4)%8;
+                break;
+            case Qt::Key_Down:
+                new_idx = (cur_idx+4)%8;
+                break;
+            case Qt::Key_Left:
+                new_idx = abs(cur_idx-1)%8;
+                break;
+            case Qt::Key_Right:
+                new_idx = (cur_idx+1)%8;
+                break;
+            default:
+                break;
+        }
+        LOG_VERBOSE("new hlt idx %d.\n", new_idx);
+
+        singerIcon[cur_idx]->highlight(false);
+        singerIcon[new_idx]->highlight(true);
+        fakeFocus = singerIcon[new_idx];
+        cur_idx = new_idx;
+    }
+    else
+    {
+
+    }
 
     return OK;
 }

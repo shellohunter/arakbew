@@ -40,23 +40,45 @@ class GuiModule : public QObject
 Q_OBJECT
 
 public:
-    GuiModule(string moduleName) : name(moduleName) {}
-    virtual ~GuiModule()    {}
-    void sendMessage(string name, int msg, void * data) { emit signalPrivateMsg(name, msg, data);}
-    void sendMessage(int msg, void * data) { emit signalBroadcastMsg(msg, data);}
-    void sendEvent(GuiEvent* event) { emit signalModuleEvent(event);}
+    GuiModule(string moduleName);
+    virtual ~GuiModule();
+
+    /* send message to the specific module. */
+    void sendMessage(string name, int msg, void * data);
+
+    /* send message to all modules. */
+    void sendMessage(int msg, void * data);
+
+    /* send event to gui manager. */
+    void sendEvent(GuiEvent* event);
+
+    virtual int processMessage(int msg, void * data) = 0;
+    virtual void toString();
+    string name;
+
+    /* in order to control gui in cli thread, we:
+        1. add reqeust functions which emit signals.
+        2. declare life cycle functions as slots. */
+    void requestResume();
+    void requestPause();
+    void requestInit();
+    void requestExit();
+
+public slots:
     virtual int resume()    = 0;
     virtual int pause()     = 0;
     virtual int init()      = 0;
     virtual int exit()      = 0;
-    virtual int processMessage(int msg, void * data) = 0;
-    virtual void toString() { printf("<GuiModule> %s.\n", name.c_str());}
-    string name;
 
 signals:
     void signalPrivateMsg(string name, int msg, void* data);
     void signalBroadcastMsg(int msg, void* data);
     void signalModuleEvent(GuiEvent* event);
+
+    void signalResume();
+    void signalPause();
+    void signalInit();
+    void signalExit();
 };
 
 
@@ -73,9 +95,7 @@ public:
     int append(GuiModule * module);
     GuiModule * getActiveModule();
     GuiModule * getModule(string moduleName);
-    int activate(string moduleName);
     int activate(GuiModule * module);
-    int deactivate();
     void toString();
     int broadcast(int msg, void * data);
 
@@ -83,6 +103,8 @@ public slots:
     void slotPrivateMsg(string name, int msg, void * data);
     void slotBroadcastMsg(int msg, void * data);
     void slotModuleEvent(GuiEvent * event);
+    int activate(string moduleName);
+    int deactivate();
 
 protected:
     int remove(GuiModule * module);

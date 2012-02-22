@@ -142,10 +142,12 @@ void * cli_rsp(void * data)
     {
         memset((void *)buffer,0,sizeof(buffer));
         if(recv(sockfd, buffer,sizeof(buffer), 0) > 0)
-        {
             printf(" %s\n",buffer);
-        }
+        else
+            break;
     }
+    printf("[cli rsp exit!]\n");
+    return NULL;
 }
 
 
@@ -170,8 +172,6 @@ int main_tcp(int argc, char ** argv)
         return -1;
     }
 #endif
-
-__retry:
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if(sockfd <= 0)
@@ -202,10 +202,9 @@ __retry:
     if(ret < 0)
     {
         print_socket_error();
-        printf("[connection NG, will retry in 5 seconds!]\n");
+        printf("[connection abort!]\n");
         close(sockfd);
-        sleep(5000);
-        goto __retry;
+        return -1;
     }
 
     printf("[connection OK , server at [%s:%d]]\n", ip, 6789);
@@ -228,10 +227,8 @@ __retry:
             {
                 print_socket_error();
                 /* lost connection to the server? */
-                printf("[connection NG, will retry in 5 seconds!]\n");
-                close(sockfd);
-                sleep(5000);
-                goto __retry;
+                printf("[connection abort!]\n");
+                break;
             }
             printf(">");
         }
@@ -246,7 +243,13 @@ __retry:
 
 int main(int argc, char ** argv)
 {
-    main_tcp(argc, argv);
+    char x;
+    do
+    {
+        main_tcp(argc, argv);
+        printf("reconnect? y/n\n");
+        x = getchar();getchar();
+    }while(x == 'y' || x == 'Y');
     return 0;
 }
 

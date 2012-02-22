@@ -50,7 +50,82 @@ CliItem guiManagerCli[] =
 
 
 
+GuiModule::GuiModule(string moduleName) : name(moduleName)
+{
+    LOG_INFO("<GuiModule> %s->%s() \n", moduleName.c_str(), __FUNCTION__);
+    connect(this, SIGNAL(signalResume()), this, SLOT(resume()));
+    connect(this, SIGNAL(signalPause()), this, SLOT(pause()));
+    connect(this, SIGNAL(signalInit()), this, SLOT(init()));
+    connect(this, SIGNAL(signalExit()), this, SLOT(exit()));
+}
+
+
+GuiModule::~GuiModule()
+{
+    LOG_INFO("<GuiModule> %s->%s() \n", name.c_str(), __FUNCTION__);
+}
+
+
+void GuiModule::sendMessage(string name, int msg, void * data)
+{
+    emit signalPrivateMsg(name, msg, data);
+}
+
+
+void GuiModule::sendMessage(int msg, void * data)
+{
+    emit signalBroadcastMsg(msg, data);
+}
+
+
+
+void GuiModule::sendEvent(GuiEvent* event)
+{
+    emit signalModuleEvent(event);
+}
+
+
+void GuiModule::toString()
+{
+    printf("<GuiModule> %s.\n", name.c_str());
+}
+
+
+void GuiModule::requestResume()
+{
+    emit signalResume();
+}
+
+
+void GuiModule::requestPause()
+{
+    emit signalPause();
+}
+
+
+void GuiModule::requestInit()
+{
+    emit signalInit();
+}
+
+
+void GuiModule::requestExit()
+{
+    emit signalExit();
+}
+
+
+
+
+
+
+
+
+
+
 GuiManager * GuiManager::gm = NULL;
+
+
 GuiManager::GuiManager()
 {
     LOG_API();
@@ -154,14 +229,14 @@ int GuiManager::activate(GuiModule * module)
         if(!current)
         {
             LOG_INFO("<GuiManager> activate \"%s\".\n", module->name.c_str());
-            module->resume();
+            module->requestResume();
             guiStack.push(module);
         }
         else if(current != module)
         {
-            current->pause();
+            current->requestPause();
             LOG_INFO("<GuiManager> activate \"%s\".\n", module->name.c_str());
-            module->resume();
+            module->requestResume();
             guiStack.push(module);
         }
         else
@@ -185,10 +260,10 @@ int GuiManager::deactivate()
     if(module)
     {
         LOG_INFO("<GuiManager> deactivate \"%s\".\n", module->name.c_str());
-        module->pause();
+        module->requestPause();
     }
-    if(guiStack.top())
-        guiStack.top()->resume();
+    if(!guiStack.isEmpty())
+        guiStack.top()->requestResume();
     return OK;
 }
 

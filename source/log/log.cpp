@@ -102,6 +102,7 @@ static int _cli_get_log_lvl(int argc, const char **argv)
     if(_log_level_ & LOG_LEVEL_ASSERT)  strcat(loglvl, "s");
     if(_log_level_ & LOG_LEVEL_TRACE)   strcat(loglvl, "t");
     if(_log_level_ & LOG_LEVEL_WARNING) strcat(loglvl, "w");
+    if(_log_level_ & LOG_LEVEL_VERBOSE) strcat(loglvl, "v");
     if(!_log_level_)                    strcat(loglvl, "n");
     printf("<cli> current log level [%s].\n", loglvl);
     return OK;

@@ -19,12 +19,11 @@ public:
     void setText(QString text);
     void setTag(void * tag);
     void * tag();
-    void setFocus(bool focus);
+    void highlight(bool hlt);
 
 private:
-    QLabel label_picture;
-    QLabel label_text;
-    QLabel container;
+    QLabel * label_picture;
+    QLabel * label_text;
     void * vtag;
 };
 
@@ -51,13 +50,16 @@ public:
 private:
     QWidget * root;
 
-#if 0
-    QPushButton * btn_avatar[8];
-    QPushButton * btn_name[8];
-#else
-    SingerIcon * singerIcon[8];
-#endif
-    QWidget * parentWidget;
+    SingerIcon  * singerIcon[8];
+
+    QLabel      * lbl_keyword;
+    QLabel      * lbl_pagenum;
+    QPushButton * btn_return;
+    QPushButton * btn_prevPage;
+    QPushButton * btn_nextPage;
+
+    QPushButton * realFocus;
+    QWidget     * parentWidget;
 
 protected:
     int keyPressEvent(QObject * obj, QKeyEvent * event);
