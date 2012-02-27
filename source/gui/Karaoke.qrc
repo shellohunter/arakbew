@@ -3,5 +3,6 @@
          <file>images/background_normal.png</file>
          <file>images/dialog_background.png</file>
          <file>images/unknown_avatar.png</file>
-	</qresource>
+         <file>images/song_select.png</file>
+  	</qresource>
 </RCC>

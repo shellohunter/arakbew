@@ -13,6 +13,8 @@
 
 class SingerIcon : public QWidget
 {
+Q_OBJECT
+
 public:
     SingerIcon(QWidget * parent = NULL);
     void setPicture(QString path);
@@ -20,6 +22,12 @@ public:
     void setTag(void * tag);
     void * tag();
     void highlight(bool hlt);
+
+protected:
+    bool eventFilter(QObject * obj, QEvent * event);
+
+signals:
+    void clicked();
 
 private:
     QLabel * label_picture;
@@ -51,6 +59,7 @@ private:
     QWidget * root;
 
     SingerIcon  * singerIcon[8];
+    int           cur_idx;
 
     QLabel      * lbl_keyword;
     QLabel      * lbl_pagenum;
@@ -67,6 +76,7 @@ protected:
 
 public slots:
     void slotSingerSelected();
+    void slotReturnButton();
 
 };
 

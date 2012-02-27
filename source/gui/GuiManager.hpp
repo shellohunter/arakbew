@@ -14,17 +14,22 @@ using namespace std;
 
 enum
 {
-    GUI_EVENT_LOGIN_STATUS,
+    GUI_EVENT_RESUME_PAGE,
+    GUI_EVENT_PAUSE_PAGE,
 };
+
+#define GUI_MODULE_NAME_LENGTH          (32)
+
 
 typedef struct
 {
     int type;
     union
     {
-        bool loginStatus;    /* GUI_EVENT_LOGIN_STATUS */
+        char * moduleName;    /* GUI_EVENT_RESUME_PAGE  */
     }data;
 }GuiEvent;
+
 
 #define GUI_MODULE_LOGIN                "login"
 #define GUI_MODULE_CATEGORY             "category"
@@ -40,11 +45,11 @@ class GuiModule : public QObject
 Q_OBJECT
 
 public:
-    GuiModule(string moduleName);
+    GuiModule(const char * moduleName);
     virtual ~GuiModule();
 
     /* send message to the specific module. */
-    void sendMessage(string name, int msg, void * data);
+    void sendMessage(const char * name, int msg, void * data);
 
     /* send message to all modules. */
     void sendMessage(int msg, void * data);
@@ -54,7 +59,8 @@ public:
 
     virtual int processMessage(int msg, void * data) = 0;
     virtual void toString();
-    string name;
+    string name1;
+    char name[GUI_MODULE_NAME_LENGTH+1];
 
     /* in order to control gui in cli thread, we:
         1. add reqeust functions which emit signals.
@@ -71,7 +77,7 @@ public slots:
     virtual int exit()      = 0;
 
 signals:
-    void signalPrivateMsg(string name, int msg, void* data);
+    void signalPrivateMsg(const char * name, int msg, void* data);
     void signalBroadcastMsg(int msg, void* data);
     void signalModuleEvent(GuiEvent* event);
 
@@ -94,21 +100,21 @@ public:
 
     int append(GuiModule * module);
     GuiModule * getActiveModule();
-    GuiModule * getModule(string moduleName);
+    GuiModule * getModule(const char * moduleName);
     int activate(GuiModule * module);
     void toString();
     int broadcast(int msg, void * data);
 
 public slots:
-    void slotPrivateMsg(string name, int msg, void * data);
+    void slotPrivateMsg(const char * name, int msg, void * data);
     void slotBroadcastMsg(int msg, void * data);
     void slotModuleEvent(GuiEvent * event);
-    int activate(string moduleName);
+    int activate(const char * moduleName);
     int deactivate();
 
 protected:
     int remove(GuiModule * module);
-    int remove(string moduleName);
+    int remove(const char * moduleName);
 
 private:
     QStack <GuiModule*> guiStack;

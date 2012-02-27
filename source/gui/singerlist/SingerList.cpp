@@ -15,25 +15,30 @@ SingerIcon::SingerIcon(QWidget * parent)
     : QWidget(parent)
 {
     this->setAutoFillBackground(true);
-    this->setGeometry(0,0,170,200);
+    this->installEventFilter(this);
+    this->setGeometry(0,0,150,180);
     label_picture = new QLabel(this);
-    label_picture->setGeometry(10,10,150,150);
+    label_picture->setGeometry(10,10,130,130);
     label_picture->setAutoFillBackground(true);
 
     label_text = new QLabel(this);
-    LOG_INFO("label_text x%d,y%d,w%d,h%d,\n",
-        label_text->geometry().x(),
-        label_text->geometry().y(),
-        label_text->geometry().width(),
-        label_text->geometry().height());
-    label_text->setGeometry(10,170,150,30);
-    LOG_INFO("label_text x%d,y%d,w%d,h%d,\n",
-        label_text->geometry().x(),
-        label_text->geometry().y(),
-        label_text->geometry().width(),
-        label_text->geometry().height());
+    label_text->setGeometry(10,140,130,30);
+    label_text->setStyleSheet("border: 1px solid whitesmoke;");
     label_text->setAlignment(Qt::AlignCenter);
     this->highlight(false);
+
+}
+
+
+bool SingerIcon::eventFilter(QObject * obj, QEvent * event)
+{
+    if(event->type() == QEvent::MouseButtonPress)
+    { 
+        emit clicked();
+        return true;
+    }
+    else
+        return false;
 }
 
 
@@ -62,7 +67,7 @@ void SingerIcon::setPicture(QString path)
 
 void SingerIcon::setText(QString text)
 {
-    label_picture->setText(text);
+    label_text->setText(text);
 }
 
 
@@ -107,27 +112,37 @@ int SingerList::init()
 
 
     lbl_keyword  = new QLabel("Male Singers", root);
-    lbl_keyword->setGeometry(10, 10, 600, 30);
-    btn_return   = new QPushButton("Back", root);
-    btn_return->setGeometry(10, 10, 50, 30);
+    lbl_keyword->setStyleSheet("background-color: whitesmoke;");
+    lbl_keyword->setGeometry(10, 10, 300, 30);
 
     lbl_pagenum  = new QLabel("7/12", root);
-    lbl_pagenum->setGeometry(500, 760, 50, 30);
+    lbl_pagenum->setStyleSheet("background-color: whitesmoke;");
+    lbl_pagenum->setGeometry(310, 10, 300, 30);
+
+
     btn_prevPage = new QPushButton("Previous", root);
-    btn_prevPage->setGeometry(600, 760, 50, 30);
+    btn_prevPage->setGeometry(10, SCREEN_HEIGHT-30, 200, 20);
     btn_nextPage = new QPushButton("Next", root);
-    btn_nextPage->setGeometry(700, 760, 50, 30);
+    btn_nextPage->setGeometry(230, SCREEN_HEIGHT-30, 200, 20);
+    btn_return   = new QPushButton("Back", root);
+    btn_return->setGeometry(SCREEN_WIDTH-210, SCREEN_HEIGHT-30, 200, 20);
 
     for(int i=0; i<2; i++)
     {
         for(int j=0; j<4; j++)
         {
             singerIcon[i*4+j] = new SingerIcon(root);
-            singerIcon[i*4+j]->move(30+170*j,20+200*i);
+            singerIcon[i*4+j]->move(70+150*j,50+180*i);
             singerIcon[i*4+j]->setPicture(QString(":/images/unknown_avatar.png"));
             singerIcon[i*4+j]->setText("Some One");
+            connect(singerIcon[i*4+j], SIGNAL(clicked()), this, SLOT(slotSingerSelected()));
         }
     }
+
+    cur_idx = 0;
+    singerIcon[0]->highlight(true);
+
+    connect(btn_return, SIGNAL(clicked()), this, SLOT(slotReturnButton()));
 
     root->hide();
 
@@ -137,7 +152,6 @@ int SingerList::init()
 int SingerList::resume()
 {
     LOG_API();
-    singerIcon[0]->highlight(true);
     realFocus->setFocus(Qt::OtherFocusReason);
     root->show();
     return OK;
@@ -171,41 +185,39 @@ int SingerList::keyPressEvent(QObject * obj, QKeyEvent * event)
 {
     LOG_API();
     static QWidget * fakeFocus = singerIcon[0];
-    static bool      icon_hlted = true;
-
-    if(icon_hlted)
+    int        new_idx = cur_idx;
+    LOG_VERBOSE("cur hlt idx %d.\n", cur_idx);
+    switch(event->key())
     {
-        static int cur_idx = 0;
-        int        new_idx = cur_idx;
-        LOG_VERBOSE("cur hlt idx %d.\n", cur_idx);
-        switch(event->key())
-        {
-            case Qt::Key_Up:
-                new_idx = abs(cur_idx-4)%8;
-                break;
-            case Qt::Key_Down:
-                new_idx = (cur_idx+4)%8;
-                break;
-            case Qt::Key_Left:
-                new_idx = abs(cur_idx-1)%8;
-                break;
-            case Qt::Key_Right:
-                new_idx = (cur_idx+1)%8;
-                break;
-            default:
-                break;
-        }
-        LOG_VERBOSE("new hlt idx %d.\n", new_idx);
-
-        singerIcon[cur_idx]->highlight(false);
-        singerIcon[new_idx]->highlight(true);
-        fakeFocus = singerIcon[new_idx];
-        cur_idx = new_idx;
+        case Qt::Key_Select:
+        case Qt::Key_Return:
+            slotSingerSelected();
+            return OK;
+        case Qt::Key_Back:
+        case Qt::Key_Escape:
+            slotReturnButton();
+            return OK;
+        case Qt::Key_Up:
+            new_idx = abs(cur_idx-4)%8;
+            break;
+        case Qt::Key_Down:
+            new_idx = (cur_idx+4)%8;
+            break;
+        case Qt::Key_Left:
+            new_idx = abs(cur_idx-1)%8;
+            break;
+        case Qt::Key_Right:
+            new_idx = (cur_idx+1)%8;
+            break;
+        default:
+            break;
     }
-    else
-    {
+    LOG_VERBOSE("new hlt idx %d.\n", new_idx);
 
-    }
+    singerIcon[cur_idx]->highlight(false);
+    singerIcon[new_idx]->highlight(true);
+    fakeFocus = singerIcon[new_idx];
+    cur_idx = new_idx;
 
     return OK;
 }
@@ -238,8 +250,22 @@ bool SingerList::eventFilter(QObject * obj, QEvent * event)
     return false;
 }
 
+
 void SingerList::slotSingerSelected()
 {
     LOG_API();
+    GuiEvent event;
+    event.type = GUI_EVENT_RESUME_PAGE;
+    event.data.moduleName = GUI_MODULE_SEARCHRESULT;
+    sendEvent(&event);
+}
+
+
+void SingerList::slotReturnButton()
+{
+    LOG_API();
+    GuiEvent event;
+    event.type = GUI_EVENT_PAUSE_PAGE;
+    sendEvent(&event);
 }
 

@@ -10,5 +10,7 @@ src_files = Split("""SongListView.cpp
                      ../../database/database.cpp
                      ../../database/sqlite3.c
 """)
+
+env.Object(qrccpp)
 test_songlist=env.Program('test_songlist',src_files+qrccpp)
 env.Install('#build',test_songlist)

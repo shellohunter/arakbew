@@ -121,6 +121,7 @@ void log_init()
                 | LOG_LEVEL_INFO
                 | LOG_LEVEL_ASSERT
                 | LOG_LEVEL_TRACE
+                | LOG_LEVEL_VERBOSE
                 | LOG_LEVEL_WARNING;
 
     Cli::cli_append(log_cli, sizeof(log_cli)/sizeof(CliItem));

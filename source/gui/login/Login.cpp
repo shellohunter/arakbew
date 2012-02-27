@@ -27,7 +27,7 @@ int Login::init()
     QPalette palette = root->palette();
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/dialog_background.png")));
     root->setPalette(palette);
-    //root->resize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    root->setGeometry(260, 120, 300, 150);
 
     kb = new KeyBoard("");
     label_title     = new QLabel(QObject::tr("Welcome to karaoke!"), root);
@@ -51,7 +51,6 @@ int Login::init()
     layoutGrid->addWidget(btn_exit, 3,2);
 
     root->setLayout(layoutGrid);
-    root->move((parentWidget->width()-root->width())/2, (parentWidget->height()-root->height())/2);
 
     edit_username->setText("test");
     edit_password->setText("test");
@@ -104,8 +103,8 @@ void Login::slotLogin()
     && edit_password->text() == "test")
     {
         GuiEvent event;
-        event.type = GUI_EVENT_LOGIN_STATUS;
-        event.data.loginStatus = true;
+        event.type = GUI_EVENT_RESUME_PAGE;
+        event.data.moduleName = GUI_MODULE_CATEGORY;
         sendEvent(&event);
     }
     else

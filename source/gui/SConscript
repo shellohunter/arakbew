@@ -6,6 +6,7 @@ src_files = Split("""
             GuiManager.cpp
             Karaoke.cpp
             login/Login.cpp
+            category/category.cpp
             search/SearchResult.cpp
             songlist/SongListView.cpp
             singerlist/SingerList.cpp

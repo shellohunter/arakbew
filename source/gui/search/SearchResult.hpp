@@ -25,21 +25,26 @@ public:
     int exit();
     int processMessage(int msg, void * data);
 
-
     int loadDataSet(DataSet<Song*>& songs);
 
 private:
     QWidget * root;
-    QPushButton * button_back;
+    QPushButton * button_return;
     QLabel * label_current;
     SongListView * song_table;
     QLabel * label_songnumber;
     QPushButton * button_prev;
     QPushButton * button_next;
     QWidget * parentWidget;
+    bool eventFilter(QObject * obj, QEvent * event);
 
 private:
     DataSet<Song*> songs;
+    KaraokeDatabase database;
+
+private slots:
+    void slotReturnButton();
+
 };
 
 #endif /* SEARCHRESULT_HPP */

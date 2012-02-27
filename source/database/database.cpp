@@ -244,7 +244,6 @@ int KaraokeDatabase::getSong(Song & song, int index)
 
     //free pStmt
     sqlite3_finalize(pStmt);
-    FREE(pStmt);
     FREE(pSqlMsg);
 
     return rc;
@@ -352,7 +351,6 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, string songName
 
     //free pStmt
     sqlite3_finalize(pStmt);
-    FREE(pStmt);
     FREE(pSqlMsg);
 
     return songs;
@@ -455,7 +453,6 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, int startIndex,
 
     //free pStmt
     sqlite3_finalize(pStmt);
-    FREE(pStmt);
     FREE(pSqlMsg);
 
     return songs;
@@ -580,7 +577,6 @@ DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, string 
 
     //free pStmt
     sqlite3_finalize(pStmt);
-    FREE(pStmt);
     FREE(pSqlMsg);
 
     return songs;
@@ -685,7 +681,6 @@ int KaraokeDatabase::getArtist(Artist & artist, int index)
 
     //free pStmt
     sqlite3_finalize(pStmt);
-    FREE(pStmt);
     FREE(pSqlMsg);
 
     return rc;
@@ -801,7 +796,6 @@ DataSet<Artist*>& KaraokeDatabase::getArtists(DataSet<Artist*>& artists, string 
 
     //free pStmt
     sqlite3_finalize(pStmt);
-    FREE(pStmt);
     FREE(pSqlMsg);
 
     return artists;

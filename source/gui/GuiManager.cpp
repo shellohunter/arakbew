@@ -50,9 +50,12 @@ CliItem guiManagerCli[] =
 
 
 
-GuiModule::GuiModule(string moduleName) : name(moduleName)
+GuiModule::GuiModule(const char * moduleName)
 {
-    LOG_INFO("<GuiModule> %s->%s() \n", moduleName.c_str(), __FUNCTION__);
+    LOG_INFO("<GuiModule> %s->%s() \n", moduleName, __FUNCTION__);
+
+    strncpy(name, moduleName, GUI_MODULE_NAME_LENGTH);
+    
     connect(this, SIGNAL(signalResume()), this, SLOT(resume()));
     connect(this, SIGNAL(signalPause()), this, SLOT(pause()));
     connect(this, SIGNAL(signalInit()), this, SLOT(init()));
@@ -62,11 +65,11 @@ GuiModule::GuiModule(string moduleName) : name(moduleName)
 
 GuiModule::~GuiModule()
 {
-    LOG_INFO("<GuiModule> %s->%s() \n", name.c_str(), __FUNCTION__);
+    LOG_INFO("<GuiModule> %s->%s() \n", name, __FUNCTION__);
 }
 
 
-void GuiModule::sendMessage(string name, int msg, void * data)
+void GuiModule::sendMessage(const char * name, int msg, void * data)
 {
     emit signalPrivateMsg(name, msg, data);
 }
@@ -87,7 +90,7 @@ void GuiModule::sendEvent(GuiEvent* event)
 
 void GuiModule::toString()
 {
-    printf("<GuiModule> %s.\n", name.c_str());
+    printf("<GuiModule> %s.\n", name);
 }
 
 
@@ -152,8 +155,8 @@ int GuiManager::append(GuiModule * module)
     LOG_API();
     if(module)
     {
-        LOG_INFO("<GuiManager> append \"%s\".\n", module->name.c_str());
-        QObject::connect(module, SIGNAL(signalPrivateMsg(string, int, void*)), this, SLOT(slotPrivateMsg(string, int, void*)));
+        LOG_INFO("<GuiManager> append \"%s\".\n", module->name);
+        QObject::connect(module, SIGNAL(signalPrivateMsg(const char *, int, void*)), this, SLOT(slotPrivateMsg(const char *, int, void*)));
         QObject::connect(module, SIGNAL(signalBroadcastMsg(int, void*)), this, SLOT(slotBroadcastMsg(int, void*)));
         QObject::connect(module, SIGNAL(signalModuleEvent(GuiEvent*)), this, SLOT(slotModuleEvent(GuiEvent*)));
         guiModules.push_back(module);
@@ -169,7 +172,7 @@ int GuiManager::remove(GuiModule * module)
     {
         if (guiModules.at(i) == module)
         {
-            LOG_INFO("<GuiManager> remove \"%s\".\n", module->name.c_str());
+            LOG_INFO("<GuiManager> remove \"%s\".\n", module->name);
             QObject::disconnect(module, 0, 0, 0);
             QObject::disconnect(module, 0, 0, 0);
             QObject::disconnect(module, 0, 0, 0);
@@ -177,7 +180,7 @@ int GuiManager::remove(GuiModule * module)
         }
         else
         {
-            LOG_INFO("<GuiManager> remove \"%s\", not found!\n", module->name.c_str());
+            LOG_INFO("<GuiManager> remove \"%s\", not found!\n", module->name);
         }
     }
 
@@ -185,7 +188,7 @@ int GuiManager::remove(GuiModule * module)
 }
 
 
-int GuiManager::remove(string moduleName)
+int GuiManager::remove(const char * moduleName)
 {
     return remove(getModule(moduleName));
 }
@@ -201,11 +204,11 @@ GuiModule * GuiManager::getActiveModule()
 
 
 
-GuiModule * GuiManager::getModule(string moduleName)
+GuiModule * GuiManager::getModule(const char * moduleName)
 {
     for(int i=0; i<guiModules.size(); i++)
     {
-        if(guiModules.at(i)->name == moduleName)
+        if(0 == strcmp(guiModules.at(i)->name, moduleName))
             return guiModules.at(i);
     }
     return NULL;
@@ -213,7 +216,7 @@ GuiModule * GuiManager::getModule(string moduleName)
 
 
 
-int GuiManager::activate(string moduleName)
+int GuiManager::activate(const char * moduleName)
 {
     return activate(getModule(moduleName));
 }
@@ -228,20 +231,20 @@ int GuiManager::activate(GuiModule * module)
         GuiModule * current = getActiveModule();
         if(!current)
         {
-            LOG_INFO("<GuiManager> activate \"%s\".\n", module->name.c_str());
+            LOG_INFO("<GuiManager> activate \"%s\".\n", module->name);
             module->requestResume();
             guiStack.push(module);
         }
         else if(current != module)
         {
             current->requestPause();
-            LOG_INFO("<GuiManager> activate \"%s\".\n", module->name.c_str());
+            LOG_INFO("<GuiManager> activate \"%s\".\n", module->name);
             module->requestResume();
             guiStack.push(module);
         }
         else
         {
-            LOG_INFO("<GuiManager> \"%s\" is already active.\n", module->name.c_str());
+            LOG_INFO("<GuiManager> \"%s\" is already active.\n", module->name);
         }
     }
     else
@@ -259,7 +262,7 @@ int GuiManager::deactivate()
     GuiModule * module = guiStack.pop();
     if(module)
     {
-        LOG_INFO("<GuiManager> deactivate \"%s\".\n", module->name.c_str());
+        LOG_INFO("<GuiManager> deactivate \"%s\".\n", module->name);
         module->requestPause();
     }
     if(!guiStack.isEmpty())
@@ -298,17 +301,17 @@ int GuiManager::broadcast(int msg, void * data)
 }
 
 
-void GuiManager::slotPrivateMsg(string moduleName, int msg, void * data)
+void GuiManager::slotPrivateMsg(const char * moduleName, int msg, void * data)
 {
     GuiModule * module = getModule(moduleName);
     if(module)
     {
-        LOG_INFO("<GuiManager> send slotPrivateMsg(\"%s\", %d, %p).\n", module->name.c_str(), msg, data);
+        LOG_INFO("<GuiManager> send slotPrivateMsg(\"%s\", %d, %p).\n", module->name, msg, data);
         module->processMessage(msg, data);
     }
     else
     {
-        LOG_INFO("<GuiManager> receiver not found!. slotPrivateMsg(\"%s\", %d, %p).\n", moduleName.c_str(), msg, data);
+        LOG_INFO("<GuiManager> receiver not found!. slotPrivateMsg(\"%s\", %d, %p).\n", moduleName, msg, data);
     }
 }
 
@@ -324,11 +327,11 @@ void GuiManager::slotModuleEvent(GuiEvent * event)
     LOG_API();
     switch(event->type)
     {
-        case GUI_EVENT_LOGIN_STATUS:
-            if(event->data.loginStatus)
-            {
-                activate(GUI_MODULE_CATEGORY);
-            }
+        case GUI_EVENT_RESUME_PAGE:
+            activate(event->data.moduleName);
+            break;
+        case GUI_EVENT_PAUSE_PAGE:
+            deactivate();
             break;
         default:
             break;

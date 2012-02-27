@@ -13,13 +13,14 @@
 #include "search/SearchResult.hpp"
 #include "singerlist/SingerList.hpp"
 #include "player/player.hpp"
+#include "category/category.hpp"
 
 
 class Karaoke
 {
 public:
     Karaoke();
-    ~Karaoke()                  {};
+    ~Karaoke()                  {}
 
     int init()                  {return OK;}
     int pause();

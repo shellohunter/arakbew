@@ -39,6 +39,7 @@ Karaoke::Karaoke() : background()
 
     /* create gui modules */
     guiManager.append(new Login(&background));
+    guiManager.append(new Category(&background));
     guiManager.append(new SearchResult(&background));
     guiManager.append(new Player(&background));
     guiManager.append(new SingerList(&background));

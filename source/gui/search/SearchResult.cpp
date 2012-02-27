@@ -1,6 +1,6 @@
 
-
 #include "SearchResult.hpp"
+#include "../background/Background.hpp"
 
 
 SearchResult::SearchResult(QWidget * parent) : GuiModule(GUI_MODULE_SEARCHRESULT)
@@ -20,35 +20,38 @@ SearchResult::~SearchResult()
 
 int SearchResult::init()
 {
-    root = new QWidget(parentWidget);
-    root->setGeometry(10, 10, 800,300);
+    database.open("./wKaraOK.db");
+    database.getSongs(songs, 0, 10);
 
-    button_back = new QPushButton("Back", root);
-    button_back->setGeometry(10, 10, 80, 20);
+    root = new QWidget(parentWidget);
+    root->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     label_current = new QLabel("American & Ueropean", root);
-    label_current->setGeometry(70, 10, 400, 20);
-
-    song_table = new SongListView(songs, root);
-    song_table->setGeometry(10, 40, 780, 200);
+    label_current->setGeometry(10, 10, 200, 20);
 
     label_songnumber = new QLabel("121/11324", root);
-    label_songnumber->setGeometry(10, 270, 80, 20);
+    label_songnumber->setGeometry(220, 10, 80, 20);
+
+    song_table = new SongListView(songs, root);
+    song_table->setGeometry(10, 40, 700, 300);
 
     button_prev = new QPushButton("Page Up", root);
-    button_prev->setGeometry(70, 270, 80, 20);
+    button_prev->setGeometry(10, 420, 80, 20);
 
     button_next = new QPushButton("Page Down", root);
-    button_next->setGeometry(150, 270, 80, 20);
+    button_next->setGeometry(100, 420, 80, 20);
+
+    button_return = new QPushButton("Back", root);
+    button_return->setGeometry(800, 420, 40, 20);
 
     QHBoxLayout * header = new QHBoxLayout();
-    header->addWidget(button_back);
     header->addWidget(label_current);
+    header->addWidget(label_songnumber);
 
-    QHBoxLayout * footer = new QHBoxLayout();
-    footer->addWidget(label_songnumber);
-    footer->addWidget(button_prev);
-    footer->addWidget(button_next);
+    QGridLayout * footer = new QGridLayout();
+    footer->addWidget(button_prev,0,0);
+    footer->addWidget(button_next,0,1);
+    footer->addWidget(button_return,0,3);
 
     QVBoxLayout * vlayout = new QVBoxLayout();
     vlayout->addLayout(header);
@@ -57,6 +60,9 @@ int SearchResult::init()
 
     song_table->setFocus();
     root->setLayout(vlayout);
+    this->installEventFilter(this);
+
+    connect(button_return, SIGNAL(clicked()), this, SLOT(slotReturnButton()));
 
     root->hide();
 
@@ -69,6 +75,7 @@ int SearchResult::init()
 int SearchResult::resume()
 {
     LOG_API();
+
     song_table->setFocus();
     root->show();
     return OK;
@@ -77,6 +84,7 @@ int SearchResult::resume()
 
 int SearchResult::pause()
 {
+    database.close();
     LOG_API();
     root->hide();
     return OK;
@@ -105,6 +113,37 @@ int SearchResult::loadDataSet(DataSet<Song*>& songs)
     ASSERT(song_table);
     song_table->loadDataSet(songs);
     return OK;
+}
+
+
+
+bool SearchResult::eventFilter(QObject * obj, QEvent * event)
+{
+    if((event->type() == QEvent::KeyPress))
+    {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        switch(keyEvent->key())
+        {
+            case Qt::Key_Back:
+            case Qt::Key_Escape:
+                slotReturnButton();
+                event->accept();
+                return true;
+            default:
+                break;
+        }
+    }
+
+    return false;
+}
+
+
+void SearchResult::slotReturnButton()
+{
+    LOG_API();
+    GuiEvent event;
+    event.type = GUI_EVENT_PAUSE_PAGE;
+    sendEvent(&event);
 }
 
 
