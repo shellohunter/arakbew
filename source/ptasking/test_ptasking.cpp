@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ptasking.hpp"
-#include "shared.hpp"
-#include "log.hpp"
+#include "ptasking.h"
+#include "shared.h"
+#include "log.h"
 
-#if WINDOWS /* win32 */
+#ifdef WINDOWS /* win32 */
     #include <windows.h>
 #else /* linux */
 
@@ -23,7 +23,7 @@ public:
     {
         while(flag)
         {
-            printf("[%d] Hey! I am %s.\n", *((unsigned *)(&thread_id)), this->threadName);
+            printf("[%p] Hey! I am %s.\n", &thread_id, this->threadName);
             sleep(500);
         }
     }

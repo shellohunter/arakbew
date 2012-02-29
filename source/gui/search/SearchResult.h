@@ -5,10 +5,10 @@
 #include <QtGui/QtGui>
 #include <QtCore/QtCore>
 
-#include "shared.hpp"
-#include "database.hpp"
-#include "../songlist/SongListView.hpp"
-#include "../GuiManager.hpp"
+#include "shared.h"
+#include "database.h"
+#include "../songlist/SongListView.h"
+#include "../GuiManager.h"
 
 
 class SearchResult : public GuiModule

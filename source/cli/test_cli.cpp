@@ -1,17 +1,16 @@
 #include <string.h>
 
-#include "log.hpp"
-#include "cli.hpp"
-#include "shared.hpp"
+#include "log.h"
+#include "cli.h"
+#include "shared.h"
 
 
-#if WINDOWS /* win32 */
+#ifdef WINDOWS /* win32 */
     #include "pthread.h"
     #define close(fd) closesocket(fd)
 #else
     #include <pthread.h>
 #endif
-
 
 
 static int _cli_test1(int argc, const char ** argv)
@@ -60,7 +59,7 @@ const char * test_cli[] =
 void * cli_server(void * data)
 {
     Cli * cli = new Cli();
-    return NULL;
+    return cli;
 }
 
 /* test cli */
@@ -74,6 +73,7 @@ int main(int argc, char ** argv)
     Cli::cli_append(_my_cli_table_, sizeof(_my_cli_table_)/sizeof(CliItem));
 
     Cli * cli = new Cli();
+    if(cli);
 
 #if 0
     pthread_t tid;
@@ -82,7 +82,7 @@ int main(int argc, char ** argv)
     sleep(10000);
 #endif
 
-#if WINDOWS
+#ifdef WINDOWS
     WSADATA wsaData;
     ret = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if( LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 2 ) 
@@ -103,14 +103,13 @@ int main(int argc, char ** argv)
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
     serverAddr.sin_port = htons(6789);
-    int nlen=sizeof(serverAddr);
 
     do {
         printf("[connecting to %s:%d ......]\n", "127.0.0.1", 6789);
         ret = connect(sockfd,(sockaddr*)&serverAddr,sizeof(sockaddr));
         if(ret < 0)
         {
-            printf("[connection NG, will retry in 5 seconds!]\n", "127.0.0.1", 6789);
+            printf("[connection NG, will retry in 5 seconds!]\n");
             print_socket_error();
             sleep(5000);
         }
@@ -123,7 +122,7 @@ int main(int argc, char ** argv)
     while(test_cli[counter])
     {
         sleep(1000);
-        sprintf(buffer, "%s", test_cli[counter],counter);
+        sprintf(buffer, "%s", test_cli[counter]);
         printf("<sender>   [%s].\n", buffer);
         if(send(sockfd, buffer, sizeof(buffer), 0)<0)
         {
@@ -132,7 +131,7 @@ int main(int argc, char ** argv)
         counter++;
     }
     ASSERT(0 == close(sockfd));
-#if WINDOWS
+#ifdef WINDOWS
     ASSERT(0 == WSACleanup());
 #endif
 

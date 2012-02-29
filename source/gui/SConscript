@@ -1,6 +1,7 @@
 Import("env")
 
 qrccpp = env.Qrc4("Karaoke")
+moccpp = [] #env.Moc4("menu.h")
 src_files = Split("""
             main.cpp
             GuiManager.cpp
@@ -8,8 +9,11 @@ src_files = Split("""
             login/Login.cpp
             category/category.cpp
             search/SearchResult.cpp
+            menu/menu.cpp
+            ../playback/playback.cpp
             songlist/SongListView.cpp
             singerlist/SingerList.cpp
+            playlist/PlayListView.cpp
             player/player.cpp
             background/Background.cpp
             ../database/database.cpp
@@ -22,5 +26,5 @@ src_files = Split("""
             widget/inputline.cpp
             """)
 
-webkara = env.Program('webkara',src_files+qrccpp)
+webkara = env.Program('webkara',src_files+qrccpp+moccpp)
 env.Install("#build", webkara)

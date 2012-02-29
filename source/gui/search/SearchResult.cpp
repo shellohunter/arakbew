@@ -1,6 +1,6 @@
 
-#include "SearchResult.hpp"
-#include "../background/Background.hpp"
+#include "SearchResult.h"
+#include "../background/Background.h"
 
 
 SearchResult::SearchResult(QWidget * parent) : GuiModule(GUI_MODULE_SEARCHRESULT)

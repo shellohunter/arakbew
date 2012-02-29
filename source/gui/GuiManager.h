@@ -8,7 +8,7 @@
 #include <QtGui>
 #include <QtCore>
 
-#include "shared.hpp"
+#include "shared.h"
 
 using namespace std;
 
@@ -32,6 +32,7 @@ typedef struct
 
 
 #define GUI_MODULE_LOGIN                "login"
+#define GUI_MODULE_MENU                 "menu"
 #define GUI_MODULE_CATEGORY             "category"
 #define GUI_MODULE_SEARCHRESULT         "searchresult"
 #define GUI_MODULE_PLAYLIST             "playlist"

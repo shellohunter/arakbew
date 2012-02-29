@@ -1,8 +1,8 @@
 
-#include "shared.hpp"
-#include "log.hpp"
-#include "cli.hpp"
-#include "GuiManager.hpp"
+#include "shared.h"
+#include "log.h"
+#include "cli.h"
+#include "GuiManager.h"
 
 
 int cli_gm_stt(int argc, const char ** argv)

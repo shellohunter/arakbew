@@ -1,8 +1,8 @@
 
 #include <string.h>
-#include "keyboard.hpp"
-#include "shared.hpp"
-#include "log.hpp"
+#include "keyboard.h"
+#include "shared.h"
+#include "log.h"
 
 
 
@@ -93,14 +93,14 @@ KeyConfig keys_config[KEYNUM] =
 
 
 KeyBoard::KeyBoard(QString titleText, QWidget * parent)
-    : QWidget(parent), focus(NULL), input((const char *)0), mode(E_MODE_NORMAL)
+    : QWidget(parent), input((const char *)0), mode(E_MODE_NORMAL)
 {
     init(titleText, parent);
 }
 
 
 KeyBoard::KeyBoard(QWidget * parent)
-    : QWidget(parent), focus(NULL), input((const char *)0), mode(E_MODE_NORMAL)
+    : QWidget(parent), input((const char *)0), mode(E_MODE_NORMAL)
 {
     init(0, parent);
 }
@@ -198,7 +198,7 @@ KeyBoardMode KeyBoard::getMode()
 
 int KeyBoard::setMode(KeyBoardMode mode)
 {
-    for(int i=0; i<sizeof(keys)/sizeof(VKey*); i++)
+    for(unsigned i=0; i<sizeof(keys)/sizeof(VKey*); i++)
     {
         keys[i]->setMode(mode);
     }

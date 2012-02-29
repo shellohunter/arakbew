@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "database.hpp"
+#include "database.h"
 
 int Song::counter = 0; /* for dbg only */
 

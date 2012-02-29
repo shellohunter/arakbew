@@ -2,8 +2,8 @@
 #include <QtGui/QtGui>
 #include <QtCore/QtCore>
 
-#include "database.hpp"
-#include "SongListView.hpp"
+#include "database.h"
+#include "SongListView.h"
 
 
 int main(int argc, char *argv[])

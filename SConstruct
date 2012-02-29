@@ -53,6 +53,8 @@ else:
     env.Append(CPPPATH=config["INC_PATH"])
     env.Append(LIBPATH=config["LIB_PATH"])
     env.Append(LIBS=config["LIBRARY"])
+    env.Append(CCFLAGS="-O2 -Wall")
+
 
 env.Tool('qt4')
 env.EnableQt4Modules(['QtGui','QtCore','QtNetwork'])

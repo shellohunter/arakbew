@@ -1,12 +1,12 @@
 #ifndef PTASKING_H
 #define PTASKING_H
 
-#if WINDOWS
+#ifdef WINDOWS
     #include "pthread.h"
 #else /* linux */
     #include <pthread.h>
 #endif
-    #include "log.hpp"
+    #include "log.h"
 
 /// pthreads thread wrapper
 class PThread

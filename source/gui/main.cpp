@@ -2,7 +2,7 @@
 #include <QtGui/QtGui>
 #include <QtCore/QtCore>
 
-#include "Karaoke.hpp"
+#include "Karaoke.h"
 
 int main(int argc, char ** argv)
 {

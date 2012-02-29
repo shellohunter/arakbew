@@ -1,7 +1,7 @@
 
 #include <deque>
-#include "database.hpp"
-#include "shared.hpp"
+#include "database.h"
+#include "shared.h"
 
 using namespace std;
 
@@ -50,14 +50,14 @@ public:
     }
 #endif
 
-    Song pop(int i = 0)
+    Song pop(unsigned i = 0)
     {
         if(i<0 || i>=this->size())
         {
             LOG_ERROR("<playlist> %s(%d), invalid index!\n", __FUNCTION__, i);
             return Song();
         }
-        LOG_VERBOSE("<playlist> pop[%d], \"%s\".\n", i, this->at(i).name.c_str(), this->size());
+        LOG_VERBOSE("<playlist> pop[%d], \"%s\", bf pop size == %d.\n", i, this->at(i).name.c_str(), this->size());
 
         this->remove(this->at(i));
         return this->at(i);
@@ -76,8 +76,7 @@ public:
 
     int find(const Song& song)
     {
-        int idx = 0;
-        for(int idx = 0;idx<this->size();idx++)
+        for(unsigned idx = 0;idx<this->size();idx++)
         {
             if(this->at(idx) == song)
                 return idx;
@@ -89,7 +88,7 @@ public:
 
     void moveForward(const Song& song, int step = 1)
     {
-        int idx = this->find(song);
+        unsigned idx = this->find(song);
         LOG_INFO("<playlist> moveForward(\"%s\", %d).\n",song.name.c_str(), step);
         if((idx-step) < 0 || idx >= this->size())
         {
@@ -105,7 +104,7 @@ public:
     void moveBackward(const Song& song, int step = 1)
     {
         int idx = this->find(song);
-        LOG_INFO("<playlist> %s(\"%s\", %d).\n",song.name.c_str(), step);
+        LOG_INFO("<playlist> %s(\"%s\", %d).\n",__FUNCTION__, song.name.c_str(), step);
         if((idx+step) >= this->size() || idx < 0)
         {
             LOG_ERROR("<playlist> can not move, (idx, step) == (%d, %d).\n", idx, step);

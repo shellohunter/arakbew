@@ -2,7 +2,7 @@
 #ifndef IPC_HPP
 #define IPC_HPP
 
-#if WINDOWS
+#ifdef WINDOWS
     #include <winsock2.h>
     #include <iostream>
 #else
@@ -12,8 +12,8 @@
     #include <errno.h>
     #include <string.h>
 #endif
-#include "ptasking.hpp"
-#include "shared.hpp"
+#include "ptasking.h"
+#include "shared.h"
 
 enum
 {

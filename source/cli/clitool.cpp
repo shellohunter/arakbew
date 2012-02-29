@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#if WINDOWS
+#ifdef WINDOWS
     #include <winsock2.h>
     #include <iostream>
     #include "pthread.h"
@@ -14,10 +14,10 @@
     #include <errno.h>
 #endif
 #if 0
-#include "ptasking.hpp"
+#include "ptasking.h"
 #endif
 
-#if WINDOWS /* win32 */
+#ifdef WINDOWS /* win32 */
     #define sleep(ms) Sleep(ms)
     #define close(fd) closesocket(fd)
     #define print_socket_error() printf("socket error %d. %s, L%d.\n", WSAGetLastError(), __FUNCTION__, __LINE__)
@@ -61,7 +61,7 @@ private:
 int main_udp(int argc, char ** argv)
 {
 
-#if WINDOWS
+#ifdef WINDOWS
     WORD wVersionRequested;
     WSADATA wsaData;
     wVersionRequested = MAKEWORD( 2, 0 ); 
@@ -124,7 +124,7 @@ int main_udp(int argc, char ** argv)
         }
     }
     close(sockfd);
-#if WINDOWS
+#ifdef WINDOWS
     WSACleanup();
 #endif
 
@@ -155,7 +155,7 @@ int main_tcp(int argc, char ** argv)
 {
     int ret = 0;
     SOCKET sockfd;
-#if WINDOWS
+#ifdef WINDOWS
     WORD wVersionRequested;
     WSADATA wsaData;
     wVersionRequested = MAKEWORD( 2, 0 ); 
@@ -195,7 +195,6 @@ int main_tcp(int argc, char ** argv)
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = inet_addr(ip); 
     serverAddr.sin_port = htons(6789);
-    int nlen=sizeof(serverAddr);
 
     printf("[connecting to %s:%d ......]\n", ip, 6789);
     ret = connect(sockfd,(sockaddr*)&serverAddr,sizeof(sockaddr));
@@ -217,7 +216,7 @@ int main_tcp(int argc, char ** argv)
     while(1)
     {
         memset(buffer, 0, sizeof(buffer));
-#if WINDOWS
+#ifdef WINDOWS
         if(gets(buffer))
 #else
         if(fgets(buffer, sizeof(buffer), stdin))
@@ -234,7 +233,7 @@ int main_tcp(int argc, char ** argv)
         }
     }
     close(sockfd);
-#if WINDOWS
+#ifdef WINDOWS
     WSACleanup();
 #endif
 

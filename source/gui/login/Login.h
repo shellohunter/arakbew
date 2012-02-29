@@ -3,9 +3,9 @@
 
 #include <QtGui>
 #include <QtCore>
-#include "../GuiManager.hpp"
-#include "../widget/inputline.hpp"
-#include "../widget/keyboard.hpp"
+#include "../GuiManager.h"
+#include "../widget/inputline.h"
+#include "../widget/keyboard.h"
 
 class Login : public GuiModule
 {

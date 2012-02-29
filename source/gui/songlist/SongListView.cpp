@@ -2,9 +2,9 @@
 
 #include<QtGui>
 #include<QtCore>
-#include"SongListView.hpp"
-#include"shared.hpp"
-#include"log.hpp"
+#include"SongListView.h"
+#include"shared.h"
+#include"log.h"
 
 
 
@@ -108,7 +108,7 @@ int SongListView::loadDataSet(DataSet<Song*>& songs)
     // remove previous data?
     // model->reset();
     
-    for(int i=0; i<songs.size(); i++)
+    for(unsigned i=0; i<songs.size(); i++)
     {
         model->setData(model->index(i, 0), QVariant(songs.at(i)->name.c_str()));
         model->setData(model->index(i, 1), QVariant(songs.at(i)->url.c_str()));
@@ -163,19 +163,22 @@ bool SongListItemDelegate::editorEvent(QEvent * event,
         const QModelIndex & index)
 {
     LOG_API();
-    if(event->type()== QEvent::MouseButtonPress && index.column()==3
-    || event->type()== QEvent::KeyPress && (static_cast<QKeyEvent*>(event))->key() == Qt::Key_Enter)
+    if(index.column()==3)
     {
-        QModelIndex newidx = index.sibling(index.row(), 3);
-        QVariant var=model->data(newidx,Qt::CheckStateRole);
-        bool isFavourite=var.toBool();
-        if(var.isValid())
-            isFavourite=isFavourite?false:true;
-        else
-            isFavourite=true;
-        model->setData(newidx,isFavourite,Qt::CheckStateRole);
-        emit signalSongSelected(model->data(index.sibling(index.row(),0)).toString(), isFavourite);
-        return true;//I have handled the event
+      if(event->type()== QEvent::MouseButtonPress ||
+        (event->type()== QEvent::KeyPress && (static_cast<QKeyEvent*>(event))->key() == Qt::Key_Enter))
+        {
+            QModelIndex newidx = index.sibling(index.row(), 3);
+            QVariant var=model->data(newidx,Qt::CheckStateRole);
+            bool isFavourite=var.toBool();
+            if(var.isValid())
+                isFavourite=isFavourite?false:true;
+            else
+                isFavourite=true;
+            model->setData(newidx,isFavourite,Qt::CheckStateRole);
+            emit signalSongSelected(model->data(index.sibling(index.row(),0)).toString(), isFavourite);
+            return true;//I have handled the event
+        }
     }
 
     return false;
@@ -191,7 +194,7 @@ SongListStandardItemModel::SongListStandardItemModel(DataSet<Song*>& songs, QObj
     this->setColumnCount(4);
 
     this->songs = &songs;
-    for(int i=0; i<songs.size(); i++)
+    for(unsigned i=0; i<songs.size(); i++)
     {
         this->setData(this->index(i, 0), QVariant(songs.at(i)->name.c_str()));
         this->setData(this->index(i, 1), QVariant(songs.at(i)->url.c_str()));

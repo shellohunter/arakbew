@@ -1,12 +1,12 @@
 
 #include <iostream>
-#include "ipc.hpp"
-#include "shared.hpp"
-#include "log.hpp"
+#include "ipc.h"
+#include "shared.h"
+#include "log.h"
 
 using namespace std;
 
-#if WINDOWS /* win32 */
+#ifdef WINDOWS /* win32 */
     #define close(fd) closesocket(fd)
 #else /* linux */
 #endif
@@ -31,7 +31,7 @@ int IPC::init()
 {
     int iRet = 0;
 
-#if WINDOWS
+#ifdef WINDOWS
     WSADATA wsaData;
     iRet = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if( LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 2 ) 
@@ -49,7 +49,7 @@ int IPC::init()
 
     sockaddr_in serverAddr;   
 
-#if WINDOWS
+#ifdef WINDOWS
         serverAddr.sin_addr.S_un.S_addr=inet_addr("127.0.0.1");
 #else
         serverAddr.sin_addr.s_addr=inet_addr("127.0.0.1");
@@ -72,7 +72,7 @@ int IPC::init()
 void IPC::stop(void)
 {
     close(sockfd);
-#if WINDOWS
+#ifdef WINDOWS
     WSACleanup( ); 
 #endif
 }
@@ -82,7 +82,7 @@ void IPC::run()
     while(true)
     {
         sockaddr_in addrClient;   
-#if WINDOWS
+#ifdef WINDOWS
         int len=sizeof(sockaddr);
 #else
         unsigned int len=sizeof(sockaddr);

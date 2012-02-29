@@ -3,12 +3,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "log.hpp"
-#include "ptasking.hpp"
-#include "shared.hpp"
+#include "log.h"
+#include "ptasking.h"
+#include "shared.h"
 
 
-#if WINDOWS
+#ifdef WINDOWS
     #include "pthread.h"
     #include <windows.h>
 #else /* linux */

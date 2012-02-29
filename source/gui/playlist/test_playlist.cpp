@@ -1,7 +1,7 @@
 
 
-#include "database.hpp"
-#include "playlist.hpp"
+#include "database.h"
+#include "playlist.h"
 #include "stdio.h"
 
 int main()
@@ -18,7 +18,7 @@ int main()
 
     database.getSongs(songs,0,5);
     songs.toString();
-    for(int i=0;i<songs.size();i++)
+    for(unsigned i=0;i<songs.size();i++)
     {
         songs.at(i)->toString();
         playlist.append(*songs.at(i));

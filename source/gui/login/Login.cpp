@@ -1,10 +1,10 @@
 
-#include "shared.hpp"
-#include "log.hpp"
+#include "shared.h"
+#include "log.h"
 
-#include "../GuiManager.hpp"
-#include "../background/Background.hpp"
-#include "Login.hpp"
+#include "../GuiManager.h"
+#include "../background/Background.h"
+#include "Login.h"
 
 Login::Login(QWidget * parent) : GuiModule(GUI_MODULE_LOGIN)
 {
@@ -104,7 +104,7 @@ void Login::slotLogin()
     {
         GuiEvent event;
         event.type = GUI_EVENT_RESUME_PAGE;
-        event.data.moduleName = GUI_MODULE_CATEGORY;
+        event.data.moduleName = (char *)GUI_MODULE_MENU;
         sendEvent(&event);
     }
     else

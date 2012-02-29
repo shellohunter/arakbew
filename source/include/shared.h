@@ -6,22 +6,22 @@
 #include <vector>
 #include <stack>
 
-#if WINDOWS
+#ifdef WINDOWS
 #else
 #include <sys/socket.h>
 #include <errno.h>
 #endif
 
-#include "log.hpp"
-#include "cli.hpp"
-#include "ipc.hpp"
-#include "ptasking.hpp"
+#include "log.h"
+#include "cli.h"
+#include "ipc.h"
+#include "ptasking.h"
 
 
 using namespace std;
 
 
-#if WINDOWS /* win32 */
+#ifdef WINDOWS /* win32 */
     #define sleep(ms) Sleep(ms)
     #define print_socket_error() LOG_VERBOSE("<socket> error %d. %s, L%d.\n", WSAGetLastError(), __FUNCTION__, __LINE__)
 #else /* linux */

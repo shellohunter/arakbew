@@ -1,6 +1,6 @@
-#include "category.hpp"
-#include "../background/Background.hpp"
-#include "../login/Login.hpp"
+#include "category.h"
+#include "../background/Background.h"
+#include "../login/Login.h"
 
 
 MBtnCategory::MBtnCategory(const QString & text, ECategoryType type, Category * parent)
@@ -171,11 +171,11 @@ void Category::slotCategorySelected(MBtnCategory * button)
         case E_category_singer_female:
         case E_category_singer_band:
         case E_category_singer_pingying:
-            event.data.moduleName = GUI_MODULE_SINGERLIST;
+            event.data.moduleName = (char *)GUI_MODULE_SINGERLIST;
             break;
         case E_category_song_favorite:
         case E_category_song_pingying:
-            event.data.moduleName = GUI_MODULE_SEARCHRESULT;
+            event.data.moduleName = (char *)GUI_MODULE_SEARCHRESULT;
             break;
     }
 
@@ -186,17 +186,9 @@ void Category::slotCategorySelected(MBtnCategory * button)
 void Category::slotReturnButton()
 {
     LOG_API();
-    QMessageBox msgBox;
-    msgBox.setInformativeText(QObject::tr("Are you sure to log off?"));
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Yes);
-    int ret = msgBox.exec();
-    if(QMessageBox::Yes == ret)
-    {
-        GuiEvent event;
-        event.type = GUI_EVENT_PAUSE_PAGE;
-        sendEvent(&event);
-    }
+    GuiEvent event;
+    event.type = GUI_EVENT_PAUSE_PAGE;
+    sendEvent(&event);
 }
 
 

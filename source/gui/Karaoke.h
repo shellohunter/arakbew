@@ -6,14 +6,16 @@
 #include <stack>
 #include <string>
 
-#include "shared.hpp"
-#include "GuiManager.hpp"
-#include "background/Background.hpp"
-#include "login/Login.hpp"
-#include "search/SearchResult.hpp"
-#include "singerlist/SingerList.hpp"
-#include "player/player.hpp"
-#include "category/category.hpp"
+#include "shared.h"
+#include "GuiManager.h"
+#include "background/Background.h"
+#include "login/Login.h"
+#include "search/SearchResult.h"
+#include "singerlist/SingerList.h"
+#include "player/player.h"
+#include "category/category.h"
+#include "playlist/PlayListView.h"
+#include "menu/menu.h"
 
 
 class Karaoke

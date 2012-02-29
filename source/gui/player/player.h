@@ -4,7 +4,13 @@
 
 #include <QtGui>
 #include <QtCore>
-#include "../GuiManager.hpp"
+#include "../GuiManager.h"
+#ifdef WINDOWS
+#include "win32/playback.h"
+#else
+#include "playback.h"
+#endif /* WINDOWS */
+
 
 class Player : public GuiModule
 {
@@ -21,12 +27,16 @@ public:
     int processMessage(int msg, void * data);
 
 private:
+    Playback * player;
+
     QWidget * root;
 
     QPushButton * btn_prev;
     QPushButton * btn_play_pause;
     QPushButton * btn_next;
     QWidget * parentWidget;
+
+    bool eventFilter(QObject * obj, QEvent * event);
 
 public slots:
     void slotStop();

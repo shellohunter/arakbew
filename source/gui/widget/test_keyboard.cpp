@@ -3,9 +3,9 @@
 #include <QtGui>
 #include <QtCore>
 
-#include "keyboard.hpp"
-#include "inputline.hpp"
-#include "../../include/log.hpp"
+#include "keyboard.h"
+#include "inputline.h"
+#include "../../include/log.h"
 
 int main(int argc, char ** argv)
 {

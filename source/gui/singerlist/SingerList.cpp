@@ -2,10 +2,10 @@
 
 #include <stdlib.h>
 
-#include "../GuiManager.hpp"
-#include "shared.hpp"
-#include "../background/Background.hpp"
-#include "SingerList.hpp"
+#include "../GuiManager.h"
+#include "shared.h"
+#include "../background/Background.h"
+#include "SingerList.h"
 
 
 
@@ -256,7 +256,7 @@ void SingerList::slotSingerSelected()
     LOG_API();
     GuiEvent event;
     event.type = GUI_EVENT_RESUME_PAGE;
-    event.data.moduleName = GUI_MODULE_SEARCHRESULT;
+    event.data.moduleName = (char *)GUI_MODULE_SEARCHRESULT;
     sendEvent(&event);
 }
 

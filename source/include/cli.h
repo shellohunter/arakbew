@@ -2,7 +2,7 @@
 #ifndef CLI_PARSER_HPP
 #define CLI_PARSER_HPP
 
-#if WINDOWS
+#ifdef WINDOWS
     #include <winsock2.h>
 #else
     #include <sys/socket.h>
@@ -11,8 +11,8 @@
     #include <errno.h>
     #define SOCKET int
 #endif
-#include "shared.hpp"
-#include "ptasking.hpp"
+#include "shared.h"
+#include "ptasking.h"
 
 typedef int cli_exec(int argc, const char ** argv);
 

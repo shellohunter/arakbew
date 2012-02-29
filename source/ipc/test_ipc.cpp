@@ -1,13 +1,13 @@
 
 #include <stdio.h>
 
-#include "ipc.hpp"
-#include "shared.hpp"
+#include "ipc.h"
+#include "shared.h"
 
 
 using namespace std;
 
-#if WINDOWS /* win32 */
+#ifdef WINDOWS /* win32 */
     #define close(fd) closesocket(fd)
 #endif
 
@@ -21,13 +21,11 @@ int main()
 {
     IPC * ipc = new IPC(myIPCHandler);
 
-    int ret = 0; 
-
-#if WINDOWS
+#ifdef WINDOWS
     WORD wVersionRequested;
     WSADATA wsaData;
     wVersionRequested = MAKEWORD( 2, 0 ); 
-    ret = WSAStartup( wVersionRequested, &wsaData );
+    int ret = WSAStartup( wVersionRequested, &wsaData );
     ASSERT( 0 == ret );
 
     if (LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 0 ) 
@@ -70,7 +68,7 @@ int main()
         counter++;
     }
     ASSERT (0 == close(sockfd));
-#if WINDOWS
+#ifdef WINDOWS
     ASSERT (0 == WSACleanup());
 #endif
 

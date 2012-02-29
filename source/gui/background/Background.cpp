@@ -1,8 +1,8 @@
 
 #include <QtGui/QtGui>
 #include <QtCore/QtCore>
-#include "shared.hpp"
-#include "Background.hpp"
+#include "shared.h"
+#include "Background.h"
 
 Background::Background(QWidget * parent)
     : QWidget(parent)

@@ -4,11 +4,11 @@
 #include <string>
 #include <string.h>
 #include <stdio.h>
-#include "shared.hpp"
+#include "shared.h"
 
 
 
-#if WINDOWS /* win32 */
+#ifdef WINDOWS /* win32 */
     #define close(fd) closesocket(fd)
 #else /* linux */
 #endif
@@ -58,7 +58,7 @@ Cli::~Cli()
 void Cli::stop()
 {
     close(sockfd);
-#if WINDOWS
+#ifdef WINDOWS
     WSACleanup(); 
 #endif
     started = false;
@@ -72,7 +72,7 @@ int Cli::start()
     /* in case of restart by mistake. */
     if(started) return OK;
 
-#if WINDOWS
+#ifdef WINDOWS
     WSADATA wsaData;
     iRet = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if( LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 2 ) 
@@ -89,7 +89,7 @@ int Cli::start()
     ASSERT(sockfd >= 0);
 
     sockaddr_in serverAddr;   
-#if WINDOWS
+#ifdef WINDOWS
     serverAddr.sin_addr.S_un.S_addr=htonl(INADDR_ANY);
 #else
     serverAddr.sin_addr.s_addr=htonl(INADDR_ANY);
@@ -126,7 +126,7 @@ void Cli::run()
     {
         sockaddr_in clientAddr;
         SOCKET clientSocket = 0;
-#if WINDOWS
+#ifdef WINDOWS
         int len=sizeof(sockaddr);
 #else
         unsigned int len=sizeof(sockaddr);
@@ -134,7 +134,7 @@ void Cli::run()
         clientSocket = accept(sockfd,(sockaddr*)&clientAddr,&len);
         if(clientSocket > 0)
         {
-#if WINDOWS
+#ifdef WINDOWS
             LOG_INFO("<cli> cli client [%s:%d] connected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
 #else
             LOG_INFO("<cli> cli client [%s:%d] connected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
@@ -157,7 +157,7 @@ void Cli::run()
             }
             else if (i == 0)
             {
-#if WINDOWS
+#ifdef WINDOWS
                 LOG_INFO("<cli> cli client [%s:%d] disconnected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
 #else
                 LOG_INFO("<cli> cli client [%s:%d] disconnected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
@@ -238,7 +238,7 @@ int Cli::cli_parser(char * clistring)
         }
 
         char  * p = temp;
-        char  * q = temp+strlen(clistring);
+        //char  * q = temp+strlen(clistring);
 
         for(int i=0; i<argc; i++)
         {

@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include <QtCore>
-#include "../GuiManager.hpp"
+#include "../GuiManager.h"
 
 typedef enum
 {

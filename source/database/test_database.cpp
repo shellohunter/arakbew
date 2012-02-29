@@ -1,4 +1,4 @@
-#include "database.hpp"
+#include "database.h"
 #include "stdio.h"
 
 int main()
@@ -26,7 +26,7 @@ int main()
 
     database.getSongs(songs, "A");
     songs.toString();
-    for(int i=0;i<songs.size();i++)
+    for(unsigned i=0;i<songs.size();i++)
     {
         songs.at(i)->toString();
     }
@@ -35,7 +35,7 @@ int main()
     
     database.getSongs(songs,0,2);
     songs.toString();
-    for(int i=0;i<songs.size();i++)
+    for(unsigned i=0;i<songs.size();i++)
     {
         songs.at(i)->toString();
     }
@@ -44,7 +44,7 @@ int main()
 
     database.getSongsByArtist(songs,"lady gaga");
     songs.toString();
-    for(int i=0;i<songs.size();i++)
+    for(unsigned i=0;i<songs.size();i++)
     {
         songs.at(i)->toString();
     }
@@ -54,7 +54,7 @@ int main()
     DataSet<Artist*> artists;
     database.getArtists(artists,"lady gaga");
     songs.toString();
-    for(int i=0;i<artists.size();i++)
+    for(unsigned i=0;i<artists.size();i++)
     {
         artists.at(i)->toString();
     }

@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include <QtCore>
-#include "database.hpp"
+#include "database.h"
 
 class SongListView;
 class SongListItemDelegate;

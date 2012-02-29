@@ -2,10 +2,10 @@
 #include <QtGui/QtGui>
 #include <QtCore/QtCore>
 
-#include "Karaoke.hpp"
-#include "log.hpp"
-#include "ipc.hpp"
-#include "cli.hpp"
+#include "Karaoke.h"
+#include "log.h"
+#include "ipc.h"
+#include "cli.h"
 
 
 static void IPCHandler(IPCNotify * notify)
@@ -41,8 +41,10 @@ Karaoke::Karaoke() : background()
     guiManager.append(new Login(&background));
     guiManager.append(new Category(&background));
     guiManager.append(new SearchResult(&background));
+    guiManager.append(new PlayListView(&background));
     guiManager.append(new Player(&background));
     guiManager.append(new SingerList(&background));
+    guiManager.append(new Menu(&background));
 
 }
 

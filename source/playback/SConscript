@@ -1,0 +1,5 @@
+Import("env")
+
+src_files = Split("""../ptasking/ptasking.cpp playback.cpp webkok_pb_test.cpp ../log/log.cpp ../cli/cli.cpp""")
+webkok_pb_test=env.Program('webkok_pb_test',src_files)
+env.Install("#build", webkok_pb_test)

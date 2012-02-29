@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include "sqlite3.h"
-#include "shared.hpp"
+#include "shared.h"
 
 using namespace std;
 
@@ -103,7 +103,7 @@ public:
     }
     void clear()
     {
-        for(int i=0; i<this->size(); i++)
+        for(unsigned i=0; i<this->size(); i++)
         {
             delete this->at(i);
         }

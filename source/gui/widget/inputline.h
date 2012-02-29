@@ -5,7 +5,7 @@
 
 #include <QtGui>
 #include <QtCore>
-#include "keyboard.hpp"
+#include "keyboard.h"
 
 
 class InputLine : public QLineEdit
