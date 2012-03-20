@@ -22,7 +22,7 @@ int Login::init()
     LOG_API();
 
     root = new QWidget(parentWidget);
-
+    root->setWindowFlags(Qt::FramelessWindowHint);
     root->setAutoFillBackground(true);
     QPalette palette = root->palette();
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/dialog_background.png")));
@@ -36,9 +36,9 @@ int Login::init()
     edit_username   = new InputLine(kb, root);
     edit_password   = new InputLine(kb, root);
     edit_password->echo(false);
-    btn_login       = new QPushButton(QObject::tr("Login"), root);
-    btn_register    = new QPushButton(QObject::tr("Register"), root);
-    btn_exit        = new QPushButton(QObject::tr("Exit"), root);
+    btn_login       = new Button(QObject::tr("Login"), root);
+    btn_register    = new Button(QObject::tr("Register"), root);
+    btn_exit        = new Button(QObject::tr("Exit"), root);
 
     QGridLayout  *layoutGrid = new QGridLayout();
     layoutGrid->addWidget(label_title, 0,0,1,3);
@@ -134,6 +134,6 @@ void Login::slotExit()
     if(QMessageBox::Yes == ret)
     {
         qApp->quit();
-    }    
+    }
 }
 

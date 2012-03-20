@@ -13,17 +13,17 @@ SongListView::SongListView(DataSet<Song*>& songs, QWidget * parent)
 {
     LOG_API();
     delegate=new SongListItemDelegate();
-    model=new SongListStandardItemModel(songs);    
+    model=new SongListStandardItemModel(songs);
 
     this->setModel(model);
     this->setItemDelegate(delegate);
-    this->setFrameShape(QFrame::NoFrame); 
+    this->setFrameShape(QFrame::NoFrame);
     this->resizeColumnsToContents();
     this->setFocusPolicy(Qt::NoFocus);
     QPalette pll = this->palette();
     //pll.setBrush(QPalette::Base, QBrush(QColor(125,255,255,0)));
     this->setPalette(pll);
-    //this->setShowGrid(false); 
+    //this->setShowGrid(false);
 
     //this->resizeRowsToContents();
     this->verticalHeader()->setDefaultSectionSize(32);
@@ -34,10 +34,20 @@ SongListView::SongListView(DataSet<Song*>& songs, QWidget * parent)
     this->setMouseTracking(true);//important
     installEventFilter(this);
 
-    connect(this, SIGNAL(signalSongSelected(QString, bool)), model, SLOT(slotSongSelected(QString, bool)));
-    connect(delegate, SIGNAL(signalSongSelected(QString, bool)), model, SLOT(slotSongSelected(QString, bool)));
+    connect(this, SIGNAL(signalSongAdd(Song)), model, SLOT(slotSongAdd(Song)));
+    connect(this, SIGNAL(signalSongDel(Song)), model, SLOT(slotSongDel(Song)));
+    //connect(delegate, SIGNAL(signalSongSelected(QString, bool)), model, SLOT(slotSongSelected(QString, bool)));
 
 }
+
+
+
+SongListView::~SongListView()
+{
+    DELETE(delegate);
+    DELETE(model);
+}
+
 
 void SongListView::keyPressEvent (QKeyEvent * keyEvent)
 {
@@ -49,13 +59,22 @@ void SongListView::keyPressEvent (QKeyEvent * keyEvent)
         {
             QModelIndex newidx = currentIndex().sibling(currentIndex().row(), 3);
             QVariant var=model->data(newidx,Qt::CheckStateRole);
-            bool isFavourite=var.toBool();
+            bool selected=var.toBool();
             if(var.isValid())
-                isFavourite=isFavourite?false:true;
+                selected=selected?false:true;
             else
-                isFavourite=true;
-            model->setData(newidx,isFavourite,Qt::CheckStateRole);
-            emit signalSongSelected(model->data(newidx.sibling(newidx.row(),0)).toString(), isFavourite);
+                selected=true;
+            model->setData(newidx,selected,Qt::CheckStateRole);
+            Song * song = model->songs->at(model->data(newidx.sibling(newidx.row(),3)).toInt());
+            //emit signalSongSelected(model->data(newidx.sibling(newidx.row(),0)).toString(), selected);
+            if(selected)
+            {
+                emit signalSongAdd(*song);
+            }
+            else
+            {
+                emit signalSongDel(*song);
+            }
             break;
         }
 
@@ -87,19 +106,6 @@ void SongListView::mouseMoveEvent(QMouseEvent * event)
 }
 
 
-SongListView::~SongListView()
-{
-    DELETE(delegate);
-    DELETE(model);
-}
-
-SongListItemDelegate::SongListItemDelegate(QObject * parent)
-    :QItemDelegate(parent)
-{
-    LOG_API();
-    favouritePixmap=QPixmap(":/images/song_select.png");
-    notFavouritePixmap=QPixmap("");
-}
 
 int SongListView::loadDataSet(DataSet<Song*>& songs)
 {
@@ -107,14 +113,24 @@ int SongListView::loadDataSet(DataSet<Song*>& songs)
 
     // remove previous data?
     // model->reset();
-    
+
     for(unsigned i=0; i<songs.size(); i++)
     {
         model->setData(model->index(i, 0), QVariant(songs.at(i)->name.c_str()));
         model->setData(model->index(i, 1), QVariant(songs.at(i)->url.c_str()));
         model->setData(model->index(i, 2), QVariant(songs.at(i)->artistName.c_str()));
+        model->setData(model->index(i, 3), QVariant(i));
     }
     return OK;
+}
+
+
+SongListItemDelegate::SongListItemDelegate(QObject * parent)
+    :QItemDelegate(parent)
+{
+    LOG_API();
+    favouritePixmap=QPixmap(":/images/song_select.png");
+    notFavouritePixmap=QPixmap("");
 }
 
 
@@ -157,6 +173,7 @@ void SongListItemDelegate::paint(QPainter * painter,
     //QItemDelegate::paint(painter,option,index);
 }
 
+#if 0
 bool SongListItemDelegate::editorEvent(QEvent * event,
         QAbstractItemModel * model,
         const QStyleOptionViewItem & /*option*/,
@@ -170,19 +187,20 @@ bool SongListItemDelegate::editorEvent(QEvent * event,
         {
             QModelIndex newidx = index.sibling(index.row(), 3);
             QVariant var=model->data(newidx,Qt::CheckStateRole);
-            bool isFavourite=var.toBool();
+            bool selected=var.toBool();
             if(var.isValid())
-                isFavourite=isFavourite?false:true;
+                selected=selected?false:true;
             else
-                isFavourite=true;
-            model->setData(newidx,isFavourite,Qt::CheckStateRole);
-            emit signalSongSelected(model->data(index.sibling(index.row(),0)).toString(), isFavourite);
+                selected=true;
+            model->setData(newidx,selected,Qt::CheckStateRole);
+            emit signalSongSelected(model->data(index.sibling(index.row(),0)).toString(), selected);
             return true;//I have handled the event
         }
     }
 
     return false;
 }
+#endif
 
 SongListStandardItemModel::SongListStandardItemModel(DataSet<Song*>& songs, QObject * parent)
     :QStandardItemModel(parent)
@@ -199,6 +217,7 @@ SongListStandardItemModel::SongListStandardItemModel(DataSet<Song*>& songs, QObj
         this->setData(this->index(i, 0), QVariant(songs.at(i)->name.c_str()));
         this->setData(this->index(i, 1), QVariant(songs.at(i)->url.c_str()));
         this->setData(this->index(i, 2), QVariant(songs.at(i)->artistName.c_str()));
+        this->setData(this->index(i, 3), QVariant(i));
     }
 
 }
@@ -213,13 +232,13 @@ QVariant SongListStandardItemModel::data(
     /* for the time being, I put static data into the model.
        if this causes performance issue, then I will consider dynamic data fetching.
     */
-    
-#if 0 
+
+#if 0
     if(role == Qt::CheckStateRole && index.column() != 4)
     {
         return QVariant();
     }
-    
+
     switch(index.column())
     {
         case 0:
@@ -236,9 +255,13 @@ QVariant SongListStandardItemModel::data(
     return QStandardItemModel::data(index,role);
 }
 
-void SongListStandardItemModel::slotSongSelected(QString song, bool selected)
+void SongListStandardItemModel::slotSongAdd(Song song)
 {
-    LOG_INFO("<songlistview> \"%s\" %s", qPrintable(song), selected?"selected":"canceled");
+    LOG_INFO("<songlistview> \"%s\" selected. \n", song.name.c_str());
 }
 
+void SongListStandardItemModel::slotSongDel(Song song)
+{
+    LOG_INFO("<songlistview> \"%s\" canceled. \n", song.name.c_str());
+}
 

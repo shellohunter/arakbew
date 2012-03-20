@@ -147,6 +147,12 @@ GuiManager::GuiManager()
 GuiManager::~GuiManager()
 {
     LOG_API();
+
+    for(int i=0; i<guiModules.size(); i++)
+    {
+        remove(guiModules.at(i));
+    }
+
 }
 
 

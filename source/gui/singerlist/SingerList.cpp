@@ -33,7 +33,7 @@ SingerIcon::SingerIcon(QWidget * parent)
 bool SingerIcon::eventFilter(QObject * obj, QEvent * event)
 {
     if(event->type() == QEvent::MouseButtonPress)
-    { 
+    {
         emit clicked();
         return true;
     }
@@ -105,27 +105,40 @@ int SingerList::init()
     root->setGeometry(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
     root->setFocusPolicy(Qt::NoFocus);
 
-    realFocus = new QPushButton(root);
+    realFocus = new Button(root);
     realFocus->setObjectName("singerlistfocus");
     realFocus->setGeometry(0,0,0,0);
     realFocus->installEventFilter(this);
 
 
-    lbl_keyword  = new QLabel("Male Singers", root);
+    lbl_keyword  = new QLabel("Singers", root);
     lbl_keyword->setStyleSheet("background-color: whitesmoke;");
     lbl_keyword->setGeometry(10, 10, 300, 30);
 
-    lbl_pagenum  = new QLabel("7/12", root);
+    lbl_pagenum  = new QLabel(root);
     lbl_pagenum->setStyleSheet("background-color: whitesmoke;");
     lbl_pagenum->setGeometry(310, 10, 300, 30);
 
 
-    btn_prevPage = new QPushButton("Previous", root);
+    btn_prevPage = new Button("Previous", root);
     btn_prevPage->setGeometry(10, SCREEN_HEIGHT-30, 200, 20);
-    btn_nextPage = new QPushButton("Next", root);
+    btn_nextPage = new Button("Next", root);
     btn_nextPage->setGeometry(230, SCREEN_HEIGHT-30, 200, 20);
-    btn_return   = new QPushButton("Back", root);
+    btn_return   = new Button("Back", root);
     btn_return->setGeometry(SCREEN_WIDTH-210, SCREEN_HEIGHT-30, 200, 20);
+
+    char* singers[] =
+    {
+        "Singers/avril.png",
+        "Singers/beyond.png",
+        "Singers/linkin-park.png",
+        "Singers/luodayou.png",
+        "Singers/mj.png",
+        "Singers/yu-quan.png",
+        "Singers/zhangxueyou.png",
+        "Singers/zhoujielun.png",
+    };
+
 
     for(int i=0; i<2; i++)
     {
@@ -133,16 +146,23 @@ int SingerList::init()
         {
             singerIcon[i*4+j] = new SingerIcon(root);
             singerIcon[i*4+j]->move(70+150*j,50+180*i);
-            singerIcon[i*4+j]->setPicture(QString(":/images/unknown_avatar.png"));
+            //singerIcon[i*4+j]->setPicture(QString(":/images/unknown_avatar.png"));
+            LOG_INFO(singers[i*4+j]);
+            singerIcon[i*4+j]->setPicture(QString(singers[i*4+j]));
             singerIcon[i*4+j]->setText("Some One");
             connect(singerIcon[i*4+j], SIGNAL(clicked()), this, SLOT(slotSingerSelected()));
         }
     }
 
     cur_idx = 0;
+    page_now = 1;
+    page_total = 18;
     singerIcon[0]->highlight(true);
+    lbl_pagenum->setText(QString("%1/%2").arg(page_now).arg(page_total));
 
     connect(btn_return, SIGNAL(clicked()), this, SLOT(slotReturnButton()));
+    connect(btn_prevPage, SIGNAL(clicked()), this, SLOT(slotPagePrev()));
+    connect(btn_nextPage, SIGNAL(clicked()), this, SLOT(slotPageNext()));
 
     root->hide();
 
@@ -196,6 +216,12 @@ int SingerList::keyPressEvent(QObject * obj, QKeyEvent * event)
         case Qt::Key_Back:
         case Qt::Key_Escape:
             slotReturnButton();
+            return OK;
+        case Qt::Key_MediaPrevious:
+            slotPagePrev();
+            return OK;
+        case Qt::Key_MediaNext:
+            slotPageNext();
             return OK;
         case Qt::Key_Up:
             new_idx = abs(cur_idx-4)%8;
@@ -268,4 +294,28 @@ void SingerList::slotReturnButton()
     event.type = GUI_EVENT_PAUSE_PAGE;
     sendEvent(&event);
 }
+
+
+
+void SingerList::slotPageNext()
+{
+    LOG_API();
+    if(page_now < page_total)
+    {
+        page_now++;
+        lbl_pagenum->setText(QString("%1/%2").arg(page_now).arg(page_total));
+    }
+}
+
+
+void SingerList::slotPagePrev()
+{
+    LOG_API();
+    if(page_now > 1)
+    {
+        page_now--;
+        lbl_pagenum->setText(QString("%1/%2").arg(page_now).arg(page_total));
+    }
+}
+
 

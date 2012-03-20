@@ -22,7 +22,7 @@ class Karaoke
 {
 public:
     Karaoke();
-    ~Karaoke()                  {}
+    ~Karaoke();
 
     int init()                  {return OK;}
     int pause();
@@ -32,6 +32,10 @@ public:
 private:
     GuiManager guiManager;
     Background  background;
+
+    IPC * ipc;
+    Cli * cli;
+
 };
 
 

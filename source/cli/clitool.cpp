@@ -29,108 +29,6 @@
 #endif
 
 
-#if 0
-
-class CliResonse : public PThread
-{
-public:
-    CliResonse() : PThread("cliresp"), flag(true) {}
-	void start(SOCKET fd) {sockfd = fd; PThread::start();} 
-    void run()
-    {
-        printf("[start listening cli response.\n>");
-        char buffer[1024];
-        while(flag)
-        {
-            memset((void *)buffer,0,sizeof(buffer));
-            if(recv(sockfd,buffer,101,0) > 0)
-            {
-                printf(" %s\n",buffer);
-            }
-        }
-    }
-    void stop()
-    {
-        flag = false;
-    }
-private:
-    int sockfd;
-    bool flag;
-};
-
-int main_udp(int argc, char ** argv)
-{
-
-#ifdef WINDOWS
-    WORD wVersionRequested;
-    WSADATA wsaData;
-    wVersionRequested = MAKEWORD( 2, 0 ); 
-    int ret = WSAStartup( wVersionRequested, &wsaData );
-    if( 0 != ret )
-    {
-        print_socket_error();
-        return -1;
-    }
-
-    if (LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 0 ) 
-    {
-        WSACleanup( );
-        return -1;
-    }
-#endif
-
-    SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if(sockfd <= 0)
-    {
-        print_socket_error();
-        return -1;
-    }
-
-#if 0
-    bool opt = true;
-    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char FAR *>(&opt), sizeof(opt));
-#endif
-
-    char * ip = NULL;
-    if(argc == 2)
-    {
-        ip = argv[1];
-    }
-    else
-    {
-        ip = "127.0.0.1";
-    }
-
-    sockaddr_in addrto;
-    memset(&addrto,0,sizeof(addrto));
-    addrto.sin_family = AF_INET;
-    addrto.sin_addr.s_addr = inet_addr(ip); 
-    addrto.sin_port = htons(6789);
-    int nlen=sizeof(addrto);
-
-    printf("[open connection to %s:%d]\n>", ip, 6789);
-
-    char buffer[512];
-    while(1)
-    {
-        memset(buffer, 0, sizeof(buffer));
-        if(gets(buffer))
-        {
-            if( sendto(sockfd, buffer, sizeof(buffer), 0, (sockaddr*)&addrto,nlen)== SOCKET_ERROR )
-            {
-                print_socket_error();
-            }
-            printf(">");
-        }
-    }
-    close(sockfd);
-#ifdef WINDOWS
-    WSACleanup();
-#endif
-
-    return 0;
-}
-#endif
 
 
 void * cli_rsp(void * data)
@@ -142,7 +40,7 @@ void * cli_rsp(void * data)
     {
         memset((void *)buffer,0,sizeof(buffer));
         if(recv(sockfd, buffer,sizeof(buffer), 0) > 0)
-            printf(" %s\n",buffer);
+            printf("%s\n>>",buffer);
         else
             break;
     }
@@ -151,14 +49,14 @@ void * cli_rsp(void * data)
 }
 
 
-int main_tcp(int argc, char ** argv)
+int tcp_task(int argc, char ** argv)
 {
     int ret = 0;
     SOCKET sockfd;
 #ifdef WINDOWS
     WORD wVersionRequested;
     WSADATA wsaData;
-    wVersionRequested = MAKEWORD( 2, 0 ); 
+    wVersionRequested = MAKEWORD( 2, 0 );
     ret = WSAStartup( wVersionRequested, &wsaData );
     if( 0 != ret )
     {
@@ -166,7 +64,7 @@ int main_tcp(int argc, char ** argv)
         return -1;
     }
 
-    if (LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 0 ) 
+    if (LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 0 )
     {
         WSACleanup( );
         return -1;
@@ -193,7 +91,7 @@ int main_tcp(int argc, char ** argv)
     sockaddr_in serverAddr;
     memset(&serverAddr,0,sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr(ip); 
+    serverAddr.sin_addr.s_addr = inet_addr(ip);
     serverAddr.sin_port = htons(6789);
 
     printf("[connecting to %s:%d ......]\n", ip, 6789);
@@ -229,8 +127,8 @@ int main_tcp(int argc, char ** argv)
                 printf("[connection abort!]\n");
                 break;
             }
-            printf(">");
         }
+        printf(">>");
     }
     close(sockfd);
 #ifdef WINDOWS
@@ -245,7 +143,7 @@ int main(int argc, char ** argv)
     char x;
     do
     {
-        main_tcp(argc, argv);
+        tcp_task(argc, argv);
         printf("reconnect? y/n\n");
         x = getchar();getchar();
     }while(x == 'y' || x == 'Y');

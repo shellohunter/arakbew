@@ -17,6 +17,8 @@
 
 #include "shared.h"
 #include "../GuiManager.h"
+#include "database.h"
+#include "../widget/button.h"
 
 class Ui
 {
@@ -41,9 +43,9 @@ public:
     QLabel *label_17;
     QLabel *label_18;
     QListWidget *listWidget;
-    QPushButton *pushButton;
-    QPushButton *pushButton_2;
-    QPushButton *pushButton_3;
+    Button *pushButton;
+    Button *pushButton_2;
+    Button *pushButton_3;
     QLabel *label_19;
     QLabel *label_20;
     QLabel *label_21;
@@ -139,15 +141,15 @@ public:
         listWidget->setObjectName(QString::fromUtf8("listWidget"));
         listWidget->setGeometry(QRect(430, 80, 81, 71));
         listWidget->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 170, 127);"));
-        pushButton = new QPushButton(widget);
+        pushButton = new Button(widget);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
         pushButton->setGeometry(QRect(70, 290, 75, 23));
         pushButton->setStyleSheet(QString::fromUtf8("background-color: rgb(85, 170, 255);"));
-        pushButton_2 = new QPushButton(widget);
+        pushButton_2 = new Button(widget);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
         pushButton_2->setGeometry(QRect(170, 290, 75, 23));
         pushButton_2->setStyleSheet(QString::fromUtf8("background-color: rgb(85, 170, 255);"));
-        pushButton_3 = new QPushButton(widget);
+        pushButton_3 = new Button(widget);
         pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
         pushButton_3->setGeometry(QRect(450, 290, 75, 23));
         pushButton_3->setStyleSheet(QString::fromUtf8("background-color: rgb(85, 170, 255);"));
@@ -222,6 +224,28 @@ public:
 
 };
 
+
+
+class PlayListItem : public QFrame
+{
+Q_OBJECT
+
+public:
+    PlayListItem(QWidget *parent = NULL) {};
+    void setContact(QString & songName, QString & singerName){};
+    void focusInEvent(QFocusEvent *event){};
+    void focusOutEvent(QFocusEvent *event){};
+    virtual ~PlayListItem(){};
+
+private:
+    QLabel * songName;
+    QLabel * singerName;
+    QLabel * status;
+
+};
+
+
+
 class PlayListView : public GuiModule
 {
 Q_OBJECT
@@ -236,6 +260,15 @@ public:
     int processMessage(int msg, void * data);
 
 
+    void ScrollDown(){};
+    void ScrollUp(){};
+    void getCurrentItem() {};
+
+
+protected:
+    bool eventFilter(QObject * obj, QEvent * event);
+
+
 private:
     Ui * ui;
     QWidget * root;
@@ -244,6 +277,9 @@ private:
 protected slots:
     void slotReturnButton();
     void slotContextMenu();
+
+    void slotSongAdd(const Song &song);
+    void slotSongDel(const Song &song);
 
 };
 

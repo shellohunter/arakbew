@@ -11,11 +11,12 @@
 #include "playback.h"
 #endif /* WINDOWS */
 
+#include "../widget/button.h"
 
 class Player : public GuiModule
 {
 Q_OBJECT
-    
+
 public:
     Player(QWidget * parent = NULL);
     ~Player();
@@ -31,9 +32,11 @@ private:
 
     QWidget * root;
 
-    QPushButton * btn_prev;
-    QPushButton * btn_play_pause;
-    QPushButton * btn_next;
+    Button * btn_prev;
+    Button * btn_pause;
+    Button * btn_play;
+    Button * btn_stop;
+    Button * btn_next;
     QWidget * parentWidget;
 
     bool eventFilter(QObject * obj, QEvent * event);
@@ -41,9 +44,15 @@ private:
 public slots:
     void slotStop();
     void slotNext();
+    void slotPlay();
+    void slotPause();
     void slotPrev();
-    void slotPlayPause();
 };
+
+
+
+
+
 
 #endif /* PLAYER_HPP */
 

@@ -80,7 +80,7 @@ typedef struct {
    2. {NULL,NULL,0} means the key is the same as previous key.
 */
 
-KeyConfig keys_config[KEYNUM] = 
+KeyConfig keys_config[KEYNUM] =
 {
     {"@","@", 0},{",",",", 0},{".",".", 0},{"?","?", 0},{"!","!", 0},{"+","+", 0},{"-","-", 0},{"_","_", 0},{"=","=", 0},{"\"","\"", 0},{"Backspace","Backspace", 1},
     {"1","1", 0},{"2","2", 0},{"3","3", 0},{"4","4", 0},{"5","5", 0},{"6","6", 0},{"7","7", 0},{"8","8", 0},{"9","9", 0},{"0",  "0", 0},{"Mode","Mode", 1},
@@ -154,6 +154,7 @@ int KeyBoard::init(QString titleText, QWidget * parent)
     }
 
     this->setLayout(vlayout);
+    focus = NULL;
     return OK;
 }
 
@@ -258,7 +259,7 @@ bool KeyBoard::eventFilter(QObject * obj, QEvent * event)
                 break;
         }
     }
-    
+
     return QWidget::eventFilter(obj, event);
 }
 
@@ -275,9 +276,9 @@ int KeyBoard::keyPressEvent(QObject * obj, QKeyEvent * event)
 
     LOG_INFO("key = %d, idx = %d \n", event->key(), idx);
     switch(event->key())
-    {    
+    {
         case Qt::Key_Up:
-            
+
             if(idx > 10)
                 idx = idx - 11;
             else
@@ -321,7 +322,7 @@ int KeyBoard::keyPressEvent(QObject * obj, QKeyEvent * event)
         }
         default:
             return false;
-            break;    
+            break;
     }
     return OK;
 }

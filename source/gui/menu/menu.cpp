@@ -27,18 +27,40 @@ int Menu::init()
     LOG_API();
 
     root = new QWidget(parentWidget);
+    root->setWindowFlags(Qt::FramelessWindowHint);
+    root->setGeometry(260, 80, 300, 350);
 
-    root->setGeometry(260, 120, 300, 150);
+    QFont font;
+    font.setPointSize(16);
+    font.setBold(true);
 
-    btn_to_category = new QPushButton(QObject::tr("Select Songs"), root);
-    btn_to_playlist = new QPushButton(QObject::tr("View Playlist"), root);
-    btn_to_player   = new QPushButton(QObject::tr("Goto Player"), root);
-    btn_to_logout   = new QPushButton(QObject::tr("Log Out"), root);
+    btn_to_category = new Button(QObject::tr("Select Songs"), root);
+    btn_to_category->setIcon(QPixmap(":/images/menu-goto-select.png"));  
+    btn_to_category->setIconSize(QSize(64,64)); 
+    btn_to_category->setFont(font);
+
+    btn_to_playlist = new Button(QObject::tr("View Playlist"), root);
+    btn_to_playlist->setIcon(QPixmap(":/images/menu-goto-playlist.png"));  
+    btn_to_playlist->setIconSize(QSize(64,64)); 
+    btn_to_playlist->setFont(font);
+
+    btn_to_player   = new Button(QObject::tr("Goto Player"), root);
+    btn_to_player->setIcon(QPixmap(":/images/menu-goto-player.png"));  
+    btn_to_player->setIconSize(QSize(64,64)); 
+    btn_to_player->setFont(font);
+
+    btn_to_logout   = new Button(QObject::tr("Log Out"), root);
+    btn_to_logout->setIcon(QPixmap(":/images/menu-goto-logout.png"));  
+    btn_to_logout->setIconSize(QSize(64,64)); 
+    btn_to_logout->setFont(font);
 
     QVBoxLayout  *layout = new QVBoxLayout();
     layout->addWidget(btn_to_category);
+    layout->addSpacing(10);
     layout->addWidget(btn_to_playlist);
+    layout->addSpacing(10);
     layout->addWidget(btn_to_player);
+    layout->addSpacing(10);
     layout->addWidget(btn_to_logout);
 
     root->setLayout(layout);

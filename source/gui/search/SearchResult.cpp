@@ -24,9 +24,10 @@ int SearchResult::init()
     database.getSongs(songs, 0, 10);
 
     root = new QWidget(parentWidget);
+    root->setWindowFlags(Qt::FramelessWindowHint);
     root->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    label_current = new QLabel("American & Ueropean", root);
+    label_current = new QLabel("American & European", root);
     label_current->setGeometry(10, 10, 200, 20);
 
     label_songnumber = new QLabel("121/11324", root);
@@ -35,13 +36,13 @@ int SearchResult::init()
     song_table = new SongListView(songs, root);
     song_table->setGeometry(10, 40, 700, 300);
 
-    button_prev = new QPushButton("Page Up", root);
+    button_prev = new Button("Page Up", root);
     button_prev->setGeometry(10, 420, 80, 20);
 
-    button_next = new QPushButton("Page Down", root);
+    button_next = new Button("Page Down", root);
     button_next->setGeometry(100, 420, 80, 20);
 
-    button_return = new QPushButton("Back", root);
+    button_return = new Button("Back", root);
     button_return->setGeometry(800, 420, 40, 20);
 
     QHBoxLayout * header = new QHBoxLayout();
@@ -63,6 +64,10 @@ int SearchResult::init()
     this->installEventFilter(this);
 
     connect(button_return, SIGNAL(clicked()), this, SLOT(slotReturnButton()));
+    connect(song_table, SIGNAL(signalSongAdd(Song)),
+        GuiManager::gm->getModule(GUI_MODULE_PLAYLIST), SLOT(slotSongAdd(Song)));
+    connect(song_table, SIGNAL(signalSongDel(Song)),
+        GuiManager::gm->getModule(GUI_MODULE_PLAYLIST), SLOT(slotSongDel(Song)));
 
     root->hide();
 

@@ -4,6 +4,7 @@
 #include <QtGui>
 #include <QtCore>
 #include "../GuiManager.h"
+#include "../widget/button.h"
 
 typedef enum
 {
@@ -48,9 +49,9 @@ public:
 
     typedef struct
     {
-        QPushButton * focus;
-        QPushButton * btn_left;
-        QPushButton * btn_right;
+        Button * focus;
+        Button * btn_left;
+        Button * btn_right;
     }Navigation;
 
     MBtnCategory * btn_cates[6];
@@ -63,7 +64,7 @@ public:
     MBtnCategory * btn_band;
 #endif
 
-    QPushButton * btn_return;
+    Button * btn_return;
     QWidget * root;
 
 protected:
@@ -81,7 +82,7 @@ private:
     Navigation * navi;
     MBtnCategory * focus_btn;
     QWidget * parentWidget;
-    QPushButton * focusAgent;
+    Button * focusAgent;
 
 public slots:
 #if 0

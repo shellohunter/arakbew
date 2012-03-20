@@ -78,10 +78,11 @@ int Category::init()
     //this->setPalette(palette);
 
     root = new QWidget(parentWidget);
+    root->setWindowFlags(Qt::FramelessWindowHint);
     root->setAutoFillBackground(true);
     root->setGeometry(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
 
-    focusAgent = new QPushButton(root);
+    focusAgent = new Button(root);
     focusAgent->setGeometry(0,0,0,0);
     focusAgent->setFocus();
     focusAgent->installEventFilter(this);
@@ -98,7 +99,7 @@ int Category::init()
         layoutGrid->addWidget(btn_cates[i], i/3, i%3);
 
 
-    btn_return      = new QPushButton(tr("Return"), this->root);
+    btn_return      = new Button(tr("Back"), this->root);
     btn_return->setGeometry(SCREEN_WIDTH-210, SCREEN_HEIGHT-30, 200, 20);
 
 #if 0
@@ -240,6 +241,7 @@ int Category::keyPressEvent(QObject * obj, QKeyEvent * event)
         case Qt::Key_Right:
             new_idx = (cur_idx+1)%6;
             break;
+
         default:
             break;
     }

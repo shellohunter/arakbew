@@ -29,7 +29,7 @@ static string& _cli_trim(string& s);
 static vector<string>& _cli_spliter(vector<string>& tokens, const string& str, const string& delimiters);
 static CliItem* _cli_search_cmd(const char * string);
 
-static CliItem _default_cli_[] = 
+static CliItem _default_cli_[] =
 {
     {"echo",         _cli_echo,         "echo service", 0},
     {"ls",           _cli_list,         "list all commands", 0},
@@ -59,7 +59,7 @@ void Cli::stop()
 {
     close(sockfd);
 #ifdef WINDOWS
-    WSACleanup(); 
+    WSACleanup();
 #endif
     started = false;
 }
@@ -75,9 +75,9 @@ int Cli::start()
 #ifdef WINDOWS
     WSADATA wsaData;
     iRet = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if( LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 2 ) 
-    { 
-        WSACleanup( ); 
+    if( LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 2 )
+    {
+        WSACleanup( );
     }
 #endif
 
@@ -88,7 +88,7 @@ int Cli::start()
     }
     ASSERT(sockfd >= 0);
 
-    sockaddr_in serverAddr;   
+    sockaddr_in serverAddr;
 #ifdef WINDOWS
     serverAddr.sin_addr.S_un.S_addr=htonl(INADDR_ANY);
 #else
@@ -110,8 +110,8 @@ int Cli::start()
         print_socket_error();
     }
 
-    LOG_INFO("cli server listening at port %d.... \n", htons(serverAddr.sin_port));
     ASSERT(iRet == 0);
+    LOG_INFO("cli server listening at port %d.... \n", htons(serverAddr.sin_port));
 
     PThread::start();
 
@@ -124,13 +124,19 @@ void Cli::run()
 {
     do
     {
+        int stdout_backup = -1;
+        int stderr_backup = -1;
         sockaddr_in clientAddr;
         SOCKET clientSocket = 0;
+        char msg[64] = {0};
 #ifdef WINDOWS
         int len=sizeof(sockaddr);
 #else
         unsigned int len=sizeof(sockaddr);
 #endif
+
+        LOG_INFO("wainting for connection .... \n");
+
         clientSocket = accept(sockfd,(sockaddr*)&clientAddr,&len);
         if(clientSocket > 0)
         {
@@ -138,6 +144,18 @@ void Cli::run()
             LOG_INFO("<cli> cli client [%s:%d] connected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
 #else
             LOG_INFO("<cli> cli client [%s:%d] connected. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
+
+            LOG_INFO("<cli> redirect io. \n");
+            sprintf(msg, "Welcome! Your address is [%s:%d].\n",inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
+            send(clientSocket, msg, strlen(msg),0);
+
+            fflush(stdout);
+            fflush(stderr);
+            stdout_backup = dup(STDOUT_FILENO);
+            stderr_backup = dup(STDERR_FILENO);
+            dup2(clientSocket, STDOUT_FILENO);
+            dup2(clientSocket, STDERR_FILENO);
+
 #endif
         }
         else
@@ -166,12 +184,24 @@ void Cli::run()
             }
             else
             {
-                print_socket_error();
-                close(clientSocket);
+                LOG_INFO("<cli> cli client [%s:%d] error. \n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
                 break;
             }
         }
-    }while(0);
+
+        print_socket_error();
+        close(clientSocket);
+
+#if WINDOWS
+#else
+        LOG_INFO("<cli> recover io. \n");
+        /* your code here ... */
+        fflush(stdout);
+        fflush(stderr);
+        dup2(stdout_backup, STDOUT_FILENO);
+        dup2(stderr_backup, STDERR_FILENO);
+#endif
+    }while(1);
 }
 
 
@@ -220,7 +250,7 @@ int Cli::cli_parser(char * clistring)
 
     do {
         argc = splited.size();
-        if(0 == argc) 
+        if(0 == argc)
             break;
 
         temp = (char *)malloc(strlen(clistring)+1);

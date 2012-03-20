@@ -22,8 +22,10 @@ src_files = Split("""
             ../cli/cli.cpp
             ../ipc/ipc.cpp
             ../ptasking/ptasking.cpp
+            ../dbg/dbg.cpp
             widget/keyboard.cpp
             widget/inputline.cpp
+            widget/button.cpp
             """)
 
 webkara = env.Program('webkara',src_files+qrccpp+moccpp)

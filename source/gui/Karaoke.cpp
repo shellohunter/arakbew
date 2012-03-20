@@ -6,6 +6,7 @@
 #include "log.h"
 #include "ipc.h"
 #include "cli.h"
+#include "dbg.h"
 
 
 static void IPCHandler(IPCNotify * notify)
@@ -27,11 +28,11 @@ Karaoke::Karaoke() : background()
     LOG_API();
 
     /* init IPC */
-    IPC * ipc = new IPC(IPCHandler, "ipc");
+    ipc = new IPC(IPCHandler, "ipc");
     ipc->start();
 
     /* init CLI */
-    Cli * cli = new Cli();
+    cli = new Cli();
     cli->start();
 
     /* init log */
@@ -40,12 +41,21 @@ Karaoke::Karaoke() : background()
     /* create gui modules */
     guiManager.append(new Login(&background));
     guiManager.append(new Category(&background));
-    guiManager.append(new SearchResult(&background));
     guiManager.append(new PlayListView(&background));
+    guiManager.append(new SearchResult(&background));
     guiManager.append(new Player(&background));
     guiManager.append(new SingerList(&background));
     guiManager.append(new Menu(&background));
 
+    dbg_init();
+
+}
+
+Karaoke::~Karaoke()
+{
+    LOG_API();
+    DELETE(ipc);
+    DELETE(cli);
 }
 
 int Karaoke::resume()

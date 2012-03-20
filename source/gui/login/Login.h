@@ -6,11 +6,12 @@
 #include "../GuiManager.h"
 #include "../widget/inputline.h"
 #include "../widget/keyboard.h"
+#include "../widget/button.h"
 
 class Login : public GuiModule
 {
 Q_OBJECT
-    
+
 public:
     Login(QWidget * parent = NULL);
     ~Login();
@@ -28,9 +29,9 @@ private:
     QLabel * label_password;
     InputLine * edit_username;
     InputLine * edit_password;
-    QPushButton * btn_login;
-    QPushButton * btn_register;
-    QPushButton * btn_exit;
+    Button * btn_login;
+    Button * btn_register;
+    Button * btn_exit;
     QWidget * parentWidget;
     KeyBoard * kb;
 

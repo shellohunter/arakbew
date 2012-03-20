@@ -4,6 +4,7 @@
 #include <QtGui>
 #include <QtCore>
 #include "../GuiManager.h"
+#include "../widget/button.h"
 
 class Menu : public GuiModule
 {
@@ -21,10 +22,10 @@ public:
 
 private:
     QWidget * root;
-    QPushButton * btn_to_player;
-    QPushButton * btn_to_playlist;
-    QPushButton * btn_to_category;
-    QPushButton * btn_to_logout;
+    Button * btn_to_player;
+    Button * btn_to_playlist;
+    Button * btn_to_category;
+    Button * btn_to_logout;
     QWidget * parentWidget;
 
 public slots:

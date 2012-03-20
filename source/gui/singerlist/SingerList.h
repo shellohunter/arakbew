@@ -7,8 +7,7 @@
 #include <QtGui>
 #include <QtCore>
 #include "../GuiManager.h"
-
-
+#include "../widget/button.h"
 
 
 class SingerIcon : public QWidget
@@ -60,14 +59,16 @@ private:
 
     SingerIcon  * singerIcon[8];
     int           cur_idx;
+    int           page_now;
+    int           page_total;
 
     QLabel      * lbl_keyword;
     QLabel      * lbl_pagenum;
-    QPushButton * btn_return;
-    QPushButton * btn_prevPage;
-    QPushButton * btn_nextPage;
+    Button      * btn_return;
+    Button      * btn_prevPage;
+    Button      * btn_nextPage;
 
-    QPushButton * realFocus;
+    Button      * realFocus;
     QWidget     * parentWidget;
 
 protected:
@@ -77,6 +78,8 @@ protected:
 public slots:
     void slotSingerSelected();
     void slotReturnButton();
+    void slotPagePrev();
+    void slotPageNext();
 
 };
 

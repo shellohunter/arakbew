@@ -9,6 +9,7 @@
 #include "database.h"
 #include "../songlist/SongListView.h"
 #include "../GuiManager.h"
+#include "../widget/button.h"
 
 
 class SearchResult : public GuiModule
@@ -29,12 +30,12 @@ public:
 
 private:
     QWidget * root;
-    QPushButton * button_return;
+    Button * button_return;
     QLabel * label_current;
     SongListView * song_table;
     QLabel * label_songnumber;
-    QPushButton * button_prev;
-    QPushButton * button_next;
+    Button * button_prev;
+    Button * button_next;
     QWidget * parentWidget;
     bool eventFilter(QObject * obj, QEvent * event);
 

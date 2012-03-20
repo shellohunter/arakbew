@@ -35,20 +35,6 @@ public:
         LOG_INFO("<playlist> [%s] is added to playlist.  now total %d.\n", val.name.c_str(), this->size());
     }
 
-#if 0
-    Song * pop2(int i = 0)
-    {
-        if(i<0 || i>=this->size())
-        {
-            LOG_ERROR("<playlist> %s(%d), invalid index!\n", __FUNCTION__, i);
-            return NULL;
-        }
-        LOG_VERBOSE("<playlist> pop[%d], %s.\n", i, this->at(i).name.c_str(), this->size());
-
-        this->remove(this->at(i));
-        return &this->at(i);
-    }
-#endif
 
     Song pop(unsigned i = 0)
     {

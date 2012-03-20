@@ -24,11 +24,12 @@ protected:
 
 private:
     SongListItemDelegate * delegate;
-    SongListStandardItemModel * model;        
+    SongListStandardItemModel * model;
     void keyPressEvent (QKeyEvent * keyEvent);
 
 signals:
-    void signalSongSelected(QString song, bool selected);
+    void signalSongAdd(Song song);
+    void signalSongDel(Song song);
 };
 
 class SongListItemDelegate:public QItemDelegate
@@ -42,16 +43,18 @@ public:
     void paint(QPainter * painter,
             const QStyleOptionViewItem & option,
             const QModelIndex & index) const;
+private:
+    QPixmap favouritePixmap;
+    QPixmap notFavouritePixmap;
+#if 0
     bool editorEvent(QEvent * event,
             QAbstractItemModel * model,
             const QStyleOptionViewItem & option,
             const QModelIndex & index);
-private:
-    QPixmap favouritePixmap;
-    QPixmap notFavouritePixmap;
 
 signals:
     void signalSongSelected(QString song, bool selected);
+#endif
 };
 
 class SongListStandardItemModel:public QStandardItemModel
@@ -61,15 +64,14 @@ Q_OBJECT
 public:
     SongListStandardItemModel(DataSet<Song*>& songs, QObject * parent = NULL);
     virtual ~ SongListStandardItemModel(){}
-    
+
     QVariant data(const QModelIndex & index,
                   int role=Qt::DisplayRole) const;
-
-private:
     DataSet<Song*> * songs;
 
 protected slots:
-    void slotSongSelected(QString song, bool selected);
+    void slotSongAdd(Song song);
+    void slotSongDel(Song song);
 };
 
 #endif /* SONGLISTVIEW_HPP */
