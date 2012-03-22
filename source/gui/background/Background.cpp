@@ -28,7 +28,7 @@ int Background::setBackground(QString & imagePath)
     LOG_API();
 
     QPalette palette = this->palette();
-    palette.setBrush(QPalette::Background, QBrush(QPixmap(imagePath)));
+    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/background_normal.png")));
     this->setPalette(palette);
     return 0;
 }
@@ -36,7 +36,8 @@ int Background::setBackground(QString & imagePath)
 int Background::clearBackground()
 {
     LOG_API();
-
-    this->setPalette(QPalette());
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Background, QColor(0,0,0,0));
+    this->setPalette(palette);
     return 0;
 }

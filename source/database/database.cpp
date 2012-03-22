@@ -4,12 +4,14 @@
 #include <string.h>
 #include "database.h"
 
+#if DBG_MEMLEAK
 int Song::counter = 0; /* for dbg only */
+#endif
 
 void Song::toString()
 {
     LOG_INFO("<Song> %02d. [%s], [%s], by [%s]. \n",
-        index, 
+        index,
         name.c_str(),
         url.c_str(),
         artistName.c_str());
@@ -24,12 +26,14 @@ bool Song::operator==(const Song& song)
         return false;
 }
 
+#if DBG_MEMLEAK
 int Artist::counter = 0; /* for dbg only */
+#endif
 
 void Artist::toString()
 {
     LOG_INFO("<Aritist> %02d. [%s], [%d], url [%s]. \n",
-        index, 
+        index,
         name.c_str(),
         gender,
         imgurl.c_str());
@@ -47,19 +51,19 @@ bool Artist::operator==(const Artist& artist)
 KaraokeDatabase::KaraokeDatabase()
 {
     LOG_API();
-} 
+}
 
 KaraokeDatabase::KaraokeDatabase(string filepath)
 {
     LOG_API();
     open(filepath);
-} 
+}
 
 KaraokeDatabase::~KaraokeDatabase()
-{   
+{
     LOG_API();
     close();
-} 
+}
 
 int KaraokeDatabase::open(string filepath)
 {
@@ -183,7 +187,7 @@ int KaraokeDatabase::getSong(Song & song, int index)
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION_NAME__);
         return E_OUT_OF_MEMORY;
     }
     memset(pSqlMsg, 0,SQLMSG_LEN * sizeof(char));
@@ -271,7 +275,7 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, string songName
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION_NAME__);
         //return E_OUT_OF_MEMORY;
         return songs;
     }
@@ -377,7 +381,7 @@ DataSet<Song*>& KaraokeDatabase::getSongs(DataSet<Song*>& songs, int startIndex,
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION_NAME__);
         //return E_OUT_OF_MEMORY;
         return songs;
     }
@@ -470,7 +474,7 @@ DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, int art
     {
         return songs;
     }
-        
+
 }
 
 DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, string artistName)
@@ -494,7 +498,7 @@ DataSet<Song*>& KaraokeDatabase::getSongsByArtist(DataSet<Song*>& songs, string 
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION_NAME__);
         //return E_OUT_OF_MEMORY;
         return songs;
     }
@@ -612,7 +616,7 @@ int KaraokeDatabase::getArtist(Artist & artist, int index)
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        LOG_INFO("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_INFO("<SQlite> Cannot malloc memory in %s\n", __FUNCTION_NAME__);
         return E_OUT_OF_MEMORY;
     }
     memset(pSqlMsg, 0,SQLMSG_LEN * sizeof(char));
@@ -685,7 +689,7 @@ int KaraokeDatabase::getArtist(Artist & artist, int index)
 
     return rc;
 }
-    
+
 DataSet<Artist*>& KaraokeDatabase::getArtists(DataSet<Artist*>& artists, string artistName)
 {
     char *pSqlMsg = NULL, pPara[SQLMSG_PARA_LEN] = {0};
@@ -707,7 +711,7 @@ DataSet<Artist*>& KaraokeDatabase::getArtists(DataSet<Artist*>& artists, string 
     pSqlMsg = (char*)malloc(SQLMSG_LEN * sizeof(char));
     if (NULL == pSqlMsg)
     {
-        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION__);
+        LOG_ERROR("<SQlite> Cannot malloc memory in %s\n", __FUNCTION_NAME__);
         //return E_OUT_OF_MEMORY;
         return artists;
     }

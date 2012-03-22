@@ -13,5 +13,8 @@
          <file>images/menu-goto-playlist.png</file>
          <file>images/menu-goto-player.png</file>
          <file>images/menu-goto-logout.png</file>
+         <file>images/playlist_item_normal.png</file>
+         <file>images/playlist_item_hl.png</file>
+         <file>images/item-playing.png</file>
   	</qresource>
 </RCC>

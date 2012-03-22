@@ -1,5 +1,6 @@
 
 #include "SearchResult.h"
+#include "../Karaoke.h"
 #include "../background/Background.h"
 
 
@@ -20,6 +21,7 @@ SearchResult::~SearchResult()
 
 int SearchResult::init()
 {
+    LOG_API();
     database.open("./wKaraOK.db");
     database.getSongs(songs, 0, 10);
 
@@ -64,11 +66,18 @@ int SearchResult::init()
     this->installEventFilter(this);
 
     connect(button_return, SIGNAL(clicked()), this, SLOT(slotReturnButton()));
+    printf("player %p\n", GuiManager::gm->getModule(GUI_MODULE_PLAYLIST));
+#if 1
     connect(song_table, SIGNAL(signalSongAdd(Song)),
         GuiManager::gm->getModule(GUI_MODULE_PLAYLIST), SLOT(slotSongAdd(Song)));
     connect(song_table, SIGNAL(signalSongDel(Song)),
         GuiManager::gm->getModule(GUI_MODULE_PLAYLIST), SLOT(slotSongDel(Song)));
-
+#else
+    connect(song_table, SIGNAL(signalSongAdd(Song)),
+        Karaoke::getInstance()->player, SLOT(slotSongAdd(Song)));
+    connect(song_table, SIGNAL(signalSongDel(Song)),
+        Karaoke::getInstance()->player, SLOT(slotSongDel(Song)));
+#endif
     root->hide();
 
     return OK;

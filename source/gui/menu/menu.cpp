@@ -29,30 +29,88 @@ int Menu::init()
     root = new QWidget(parentWidget);
     root->setWindowFlags(Qt::FramelessWindowHint);
     root->setGeometry(260, 80, 300, 350);
-
     QFont font;
     font.setPointSize(16);
     font.setBold(true);
 
-    btn_to_category = new Button(QObject::tr("Select Songs"), root);
-    btn_to_category->setIcon(QPixmap(":/images/menu-goto-select.png"));  
-    btn_to_category->setIconSize(QSize(64,64)); 
-    btn_to_category->setFont(font);
 
+#if 0
+    root->setStyleSheet("QPushButton{background: white;"
+                        "font: 24pt bold;"
+                        "color: blue;"
+                        "image: url(:/images/menu-goto-select.png)"
+                        "image-position: left center;"
+                        "padding-left: 10px;"
+                        "border: none;}");
+#endif
+
+    btn_to_category = new Button(QObject::tr("Select Songs"), root);
+#if 1
+    btn_to_category->setStyleSheet(QString("background-color: whitesmoke;"
+                                           "image: url(:/images/menu-goto-select.png);"
+                                           "image-position: left center;"
+                                           "padding: 0 15px;"
+                                           "border:1px solid;"
+                                           "color: blue;"
+                                           "text-align: right;"
+                                           "font: 24pt bold;"));
+    btn_to_category->setMinimumHeight(64);
+#else
+    btn_to_category->setIcon(QPixmap(":/images/menu-goto-select.png"));
+    btn_to_category->setIconSize(QSize(64,64));
+    btn_to_category->setFont(font);
+#endif
+
+#if 1
+    btn_to_playlist = new Button(QObject::tr("Playlist"), root);
+    btn_to_playlist->setStyleSheet(QString("background-color: whitesmoke;"
+                                           "image:url(:/images/menu-goto-playlist.png);"
+                                           "image-position: left center;"
+                                           "padding: 0 15px;"
+                                           "border:1px solid;"
+                                           "color: blue;"
+                                           "text-align: right;"
+                                           "font: 24pt bold;"));
+    btn_to_playlist->setMinimumHeight(64);
+#else
     btn_to_playlist = new Button(QObject::tr("View Playlist"), root);
-    btn_to_playlist->setIcon(QPixmap(":/images/menu-goto-playlist.png"));  
-    btn_to_playlist->setIconSize(QSize(64,64)); 
+    btn_to_playlist->setIcon(QPixmap(":/images/menu-goto-playlist.png"));
+    btn_to_playlist->setIconSize(QSize(64,64));
     btn_to_playlist->setFont(font);
+#endif
 
     btn_to_player   = new Button(QObject::tr("Goto Player"), root);
-    btn_to_player->setIcon(QPixmap(":/images/menu-goto-player.png"));  
-    btn_to_player->setIconSize(QSize(64,64)); 
+    btn_to_player->setMinimumHeight(64);
+#if 1
+    btn_to_player->setStyleSheet(QString("background-color: whitesmoke;"
+                                         "image:url(:/images/menu-goto-player.png);"
+                                         "image-position: left center;"
+                                         "padding: 0 15px;"
+                                         "border:1px solid;"
+                                         "color: blue;"
+                                         "text-align: right;"
+                                         "font: 24pt bold;"));
+#else
+    btn_to_player->setIcon(QPixmap(":/images/menu-goto-player.png"));
+    btn_to_player->setIconSize(QSize(64,64));
     btn_to_player->setFont(font);
-
+#endif
     btn_to_logout   = new Button(QObject::tr("Log Out"), root);
-    btn_to_logout->setIcon(QPixmap(":/images/menu-goto-logout.png"));  
-    btn_to_logout->setIconSize(QSize(64,64)); 
+    btn_to_logout->setMinimumHeight(64);
+#if 1
+    btn_to_logout->setStyleSheet(QString("background-color: whitesmoke;"
+                                         "image:url(:/images/menu-goto-logout.png);"
+                                         "image-position: left center;"
+                                         "padding: 0 15px;"
+                                         "border:1px solid;"
+                                         "color: blue;"
+                                         "text-align: right;"
+                                         "font: 24pt bold;"));
+#else
+    btn_to_logout->setIcon(QPixmap(":/images/menu-goto-logout.png"));
+    btn_to_logout->setIconSize(QSize(64,64));
     btn_to_logout->setFont(font);
+#endif
 
     QVBoxLayout  *layout = new QVBoxLayout();
     layout->addWidget(btn_to_category);

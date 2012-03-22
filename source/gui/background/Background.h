@@ -13,6 +13,8 @@ class Background : public QWidget
 {
 public:
     Background(QWidget * parent = NULL);
+
+public slots:
     int setBackground(QString & imagePath);
     int clearBackground();
 };

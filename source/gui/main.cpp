@@ -9,6 +9,7 @@ int main(int argc, char ** argv)
     QApplication app(argc, argv);
     Karaoke * x = new Karaoke();
 
+
     x->resume();
     return app.exec();
 }

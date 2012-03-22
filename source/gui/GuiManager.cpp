@@ -25,7 +25,7 @@ int cli_gm_resume(int argc, const char ** argv)
     
     if(GuiManager::gm)
     {
-        LOG_INFO("<cli> %s(%s) \n", __FUNCTION__, argv[1]);
+        LOG_INFO("<cli> %s(%s) \n", __FUNCTION_NAME__, argv[1]);
         GuiManager::gm->activate(argv[1]);
     }
     return OK;
@@ -52,7 +52,7 @@ CliItem guiManagerCli[] =
 
 GuiModule::GuiModule(const char * moduleName)
 {
-    LOG_INFO("<GuiModule> %s->%s() \n", moduleName, __FUNCTION__);
+    LOG_INFO("<GuiModule> %s->%s() \n", moduleName, __FUNCTION_NAME__);
 
     strncpy(name, moduleName, GUI_MODULE_NAME_LENGTH);
     
@@ -65,7 +65,7 @@ GuiModule::GuiModule(const char * moduleName)
 
 GuiModule::~GuiModule()
 {
-    LOG_INFO("<GuiModule> %s->%s() \n", name, __FUNCTION__);
+    LOG_INFO("<GuiModule> %s->%s() \n", name, __FUNCTION_NAME__);
 }
 
 

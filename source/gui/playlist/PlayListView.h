@@ -1,6 +1,6 @@
 
-#ifndef PLAYLISTVIEW_HPP
-#define PLAYLISTVIEW_HPP
+#ifndef PLAYLISTVIEW_H
+#define PLAYLISTVIEW_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -19,6 +19,7 @@
 #include "../GuiManager.h"
 #include "database.h"
 #include "../widget/button.h"
+#include "PlayListItem.h"
 
 class Ui
 {
@@ -224,31 +225,23 @@ public:
 
 };
 
-
-
-class PlayListItem : public QFrame
-{
-Q_OBJECT
-
-public:
-    PlayListItem(QWidget *parent = NULL) {};
-    void setContact(QString & songName, QString & singerName){};
-    void focusInEvent(QFocusEvent *event){};
-    void focusOutEvent(QFocusEvent *event){};
-    virtual ~PlayListItem(){};
-
-private:
-    QLabel * songName;
-    QLabel * singerName;
-    QLabel * status;
-
-};
-
-
+#define PLAYLISTVIEW_ITEM_NUM (8)
 
 class PlayListView : public GuiModule
 {
 Q_OBJECT
+
+
+    typedef struct
+    {
+        QWidget * focus;
+        QWidget * btn_up;
+        QWidget * btn_down;
+        QWidget * btn_left;
+        QWidget * btn_right;
+    }Navigation;
+
+
 public:
     PlayListView(QWidget * parent = NULL);
     ~PlayListView();
@@ -259,29 +252,39 @@ public:
     int exit();
     int processMessage(int msg, void * data);
 
-
-    void ScrollDown(){};
-    void ScrollUp(){};
     void getCurrentItem() {};
 
 
 protected:
     bool eventFilter(QObject * obj, QEvent * event);
-
+    int CursorKeyEvent(int key);
+    void initNavigation();
 
 private:
     Ui * ui;
     QWidget * root;
     QWidget * parentWidget;
+    PlayListItem * items[PLAYLISTVIEW_ITEM_NUM];
+    Button * btn_return;
+    Navigation * navi;
+    Button * btn_prev;
+    Button * btn_next;
+    Button * eventAgent;
+    QWidget * currentFocus;
+    QWidget * listview;
+    QLabel * promptLabel;
 
 protected slots:
     void slotReturnButton();
     void slotContextMenu();
+    void slotPageUp();
+    void slotPageDown();
 
     void slotSongAdd(const Song &song);
     void slotSongDel(const Song &song);
+    void slotSongStart();
 
 };
 
 
-#endif // PLAYLISTVIEW_HPP
+#endif // PLAYLISTVIEW_H

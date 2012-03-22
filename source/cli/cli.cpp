@@ -241,7 +241,7 @@ int Cli::cli_parser(char * clistring)
     char  * temp = NULL;
     vector<string> splited;
 
-    LOG_VERBOSE("<cli> %s(%s)\n", __FUNCTION__, clistring);
+    LOG_VERBOSE("<cli> %s(%s)\n", __FUNCTION_NAME__, clistring);
 
     if(strlen(clistring) == 0) return OK;
 

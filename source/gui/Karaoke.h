@@ -33,9 +33,17 @@ private:
     GuiManager guiManager;
     Background  background;
 
+    Login * login;
+    Category * category;
+    Player * player;
+    PlayListView * playlistview;
+    SearchResult * searchresult;
+    SingerList * singerlist;
+    Menu * menu;
+
+
     IPC * ipc;
     Cli * cli;
-
 };
 
 

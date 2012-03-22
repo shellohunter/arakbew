@@ -15,7 +15,6 @@ public:
     Button(const QString & text, QWidget * parent = NULL);
     Button(const QIcon & icon, const QString & text, QWidget * parent = NULL);
     ~Button();
-    void setStyleSheet(const QString& css);
 protected:
     void keyPressEvent(QKeyEvent * event);
     QString style;

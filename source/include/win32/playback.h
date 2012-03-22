@@ -153,7 +153,7 @@ extern void vWebKokPbDbg(const char * format, ...);
         if (!(cond)) {                                                  \
             printf("\n[WEB_KOK_PB] DBG_ASSERT: FILE=%s, FUNCTION=%s, LINE=%d\n",\
                     __FILE__,                                           \
-                    __FUNCTION__,                                       \
+                    __FUNCTION_NAME__,                                       \
                     __LINE__);                                          \
             while(1);                                                  \
         }

@@ -22,10 +22,12 @@ using namespace std;
 
 
 #ifdef WINDOWS /* win32 */
+    #define __FUNCTION_NAME__  __FUNCTION__
     #define sleep(ms) Sleep(ms)
-    #define print_socket_error() LOG_VERBOSE("<socket> error %d. %s, L%d.\n", WSAGetLastError(), __FUNCTION__, __LINE__)
+    #define print_socket_error() LOG_VERBOSE("<socket> error %d. %s, L%d.\n", WSAGetLastError(), __FUNCTION_NAME__, __LINE__)
 #else /* linux */
-    #define print_socket_error() LOG_VERBOSE("<socket error> %s. %s, L%d.\n", strerror(errno), __FUNCTION__, __LINE__)
+    #define __FUNCTION_NAME__  __PRETTY_FUNCTION__
+    #define print_socket_error() LOG_VERBOSE("<socket error> %s. %s, L%d.\n", strerror(errno), __FUNCTION_NAME__, __LINE__)
     typedef struct sockaddr_in sockaddr_in;
     typedef struct sockaddr sockaddr;
     #define SOCKET int
@@ -44,13 +46,13 @@ typedef enum
 
 
 #undef DELETE
-#define DELETE(p) if(p) {LOG_VERBOSE("delete %s. %s\n", #p, __FUNCTION__); delete p;}
+#define DELETE(p) if(p) {LOG_VERBOSE("delete %s. %s\n", #p, __FUNCTION_NAME__); delete p;}
 
 #undef FREE
-#define FREE(p) if(p) {LOG_VERBOSE("free %s. %s\n", #p, __FUNCTION__); free(p);}
+#define FREE(p) if(p) {LOG_VERBOSE("free %s. %s\n", #p, __FUNCTION_NAME__); free(p);}
 
 #undef DELETE_ARRAY
-#define DELETE_ARRAY(p) if(p) {LOG_VERBOSE("delete %s. %s\n", #p, __FUNCTION__); delete[] p;}
+#define DELETE_ARRAY(p) if(p) {LOG_VERBOSE("delete %s. %s\n", #p, __FUNCTION_NAME__); delete[] p;}
 
 
 

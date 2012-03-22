@@ -13,7 +13,7 @@ using namespace std;
 #define SQLMSG_LEN (1024)
 #define SQLMSG_PARA_LEN (128)
 
-#define DBG_MEMLEAK (1)
+#define DBG_MEMLEAK (0)
 
 typedef enum
 {
@@ -44,7 +44,7 @@ public:
     string albumName;
 
     void toString();
-    bool operator==(const Song & song);    
+    bool operator==(const Song & song);
 
 #if DBG_MEMLEAK
 public:
@@ -79,7 +79,7 @@ public:
     string imgurl;
 
     void toString();
-    bool operator==(const Artist & song);    
+    bool operator==(const Artist & song);
 
 #if DBG_MEMLEAK
 public:

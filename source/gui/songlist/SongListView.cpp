@@ -138,7 +138,7 @@ void SongListItemDelegate::paint(QPainter * painter,
         const QStyleOptionViewItem & option,
         const QModelIndex & index) const
 {
-    LOG_VERBOSE(__FUNCTION__);
+    LOG_VERBOSE(__FUNCTION_NAME__);
     if(index.column()!=3)
     {
 #if 0
@@ -227,7 +227,7 @@ QVariant SongListStandardItemModel::data(
         const QModelIndex & index,
         int role) const
 {
-    LOG_VERBOSE(__FUNCTION__);
+    LOG_VERBOSE(__FUNCTION_NAME__);
 
     /* for the time being, I put static data into the model.
        if this causes performance issue, then I will consider dynamic data fetching.

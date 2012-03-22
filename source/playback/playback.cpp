@@ -1,33 +1,34 @@
 /********************************************************************************************
- *     LEGAL DISCLAIMER 
+ *     LEGAL DISCLAIMER
  *
  *     (Header of MediaTek Software/Firmware Release or Documentation)
  *
- *     BY OPENING OR USING THIS FILE, BUYER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES 
- *     THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("MEDIATEK SOFTWARE") RECEIVED 
- *     FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE PROVIDED TO BUYER ON AN "AS-IS" BASIS 
- *     ONLY. MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL WARRANTIES, EXPRESS OR IMPLIED, 
- *     INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR 
- *     A PARTICULAR PURPOSE OR NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY 
- *     WHATSOEVER WITH RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY, 
- *     INCORPORATED IN, OR SUPPLIED WITH THE MEDIATEK SOFTWARE, AND BUYER AGREES TO LOOK 
+ *     BY OPENING OR USING THIS FILE, BUYER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
+ *     THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("MEDIATEK SOFTWARE") RECEIVED
+ *     FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE PROVIDED TO BUYER ON AN "AS-IS" BASIS
+ *     ONLY. MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL WARRANTIES, EXPRESS OR IMPLIED,
+ *     INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR
+ *     A PARTICULAR PURPOSE OR NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY
+ *     WHATSOEVER WITH RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY,
+ *     INCORPORATED IN, OR SUPPLIED WITH THE MEDIATEK SOFTWARE, AND BUYER AGREES TO LOOK
  *     ONLY TO SUCH THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO. MEDIATEK SHALL ALSO
- *     NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE RELEASES MADE TO BUYER'S SPECIFICATION 
+ *     NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE RELEASES MADE TO BUYER'S SPECIFICATION
  *     OR TO CONFORM TO A PARTICULAR STANDARD OR OPEN FORUM.
- *     
- *     BUYER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S ENTIRE AND CUMULATIVE LIABILITY WITH 
- *     RESPECT TO THE MEDIATEK SOFTWARE RELEASED HEREUNDER WILL BE, AT MEDIATEK'S OPTION, 
- *     TO REVISE OR REPLACE THE MEDIATEK SOFTWARE AT ISSUE, OR REFUND ANY SOFTWARE LICENSE 
- *     FEES OR SERVICE CHARGE PAID BY BUYER TO MEDIATEK FOR SUCH MEDIATEK SOFTWARE AT ISSUE. 
- *     
- *     THE TRANSACTION CONTEMPLATED HEREUNDER SHALL BE CONSTRUED IN ACCORDANCE WITH THE LAWS 
- *     OF THE STATE OF CALIFORNIA, USA, EXCLUDING ITS CONFLICT OF LAWS PRINCIPLES.  
+ *
+ *     BUYER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S ENTIRE AND CUMULATIVE LIABILITY WITH
+ *     RESPECT TO THE MEDIATEK SOFTWARE RELEASED HEREUNDER WILL BE, AT MEDIATEK'S OPTION,
+ *     TO REVISE OR REPLACE THE MEDIATEK SOFTWARE AT ISSUE, OR REFUND ANY SOFTWARE LICENSE
+ *     FEES OR SERVICE CHARGE PAID BY BUYER TO MEDIATEK FOR SUCH MEDIATEK SOFTWARE AT ISSUE.
+ *
+ *     THE TRANSACTION CONTEMPLATED HEREUNDER SHALL BE CONSTRUED IN ACCORDANCE WITH THE LAWS
+ *     OF THE STATE OF CALIFORNIA, USA, EXCLUDING ITS CONFLICT OF LAWS PRINCIPLES.
  ************************************************************************************************/
 
 #ifdef WINDOWS
 #include "win32/playback.h"
 #else
 #include "playback.h"
+#include "shared.h"
 #endif /* WINDOWS */
 
 using namespace std;
@@ -38,7 +39,7 @@ void vWebKokPbDbg(const char * format, ...)
 {
     char arucString[512] = "[WEB_KOK_PB] ";
     va_list argptr;
-    
+
     pthread_mutex_lock(&g_dbg_mutex);
 
     va_start(argptr, format);
@@ -68,14 +69,14 @@ Playback::Playback(const char * pThreadName, PFN_PB_NOTIFY_CB pfnCb) : PThread(p
     WEBKOK_PB_INFO(("Create playback engine\n"));
 
     vInit();
-    
+
     IMTK_PB_HANDLE_T h_handle = IMTK_NULL_HANDLE;
     IMTK_PB_ERROR_CODE_T tRet = IMTK_PB_ERROR_CODE_OK;
 
     IMtkPb_Ctrl_Init();
 
     IMtkPb_Misc_Init(); // for adjust valume
-    
+
     tRet = IMtkPb_Ctrl_Open(&h_handle, IMTK_PB_CTRL_BUFFERING_MODEL_URI, IMTK_PB_CTRL_LIB_MASTER, NULL);
     if (tRet != IMTK_PB_ERROR_CODE_OK)
     {
@@ -83,20 +84,20 @@ Playback::Playback(const char * pThreadName, PFN_PB_NOTIFY_CB pfnCb) : PThread(p
         m_hPlaybackHandle = IMTK_NULL_HANDLE;
         return;
     }
-    
+
     m_hPlaybackHandle = h_handle;
     WEBKOK_PB_INFO(("Engine handle: %d \n", (UINT32)h_handle));
 
     WEBKOK_PB_INFO(("RegCallback\n"));
     m_pfnNotifyCb = pfnCb;
-    
+
     tRet = IMtkPb_Ctrl_RegCallback(m_hPlaybackHandle, (VOID *)this, webkok_pb_nfy_fct);
     if (tRet != IMTK_PB_ERROR_CODE_OK)
     {
         WEBKOK_PB_ERROR(("RegCallbback fail\n"));
         return;
     }
-    
+
     /*create thread for Playback.*/
     vCreateTask();
 }
@@ -105,12 +106,12 @@ Playback::~Playback()
 {
     WEBKOK_PB_INFO(("~Playback\n"));
     vInit();
-    if (m_pcFilePath != NULL) 
+    if (m_pcFilePath != NULL)
     {
         free(m_pcFilePath);
         m_pcFilePath = NULL;
     }
-/*    
+/*
     IMtkPb_Ctrl_Close(m_hPlaybackHandle);
     IMtkPb_Misc_Terminate();
     IMtkPb_Ctrl_Terminate();
@@ -127,7 +128,7 @@ VOID Playback::vPfnNotifyCbProxy(E_NOTIFY_TYPE eNfyTp, void *pvData)
 
     PB_NOTIFY_T tNotifyInf;
     memset((void *)&tNotifyInf, 0, sizeof(PB_NOTIFY_T));
-    
+
     switch(eNfyTp)
     {
         case E_UOP_RET:
@@ -155,7 +156,7 @@ VOID Playback::vPfnNotifyCbProxy(E_NOTIFY_TYPE eNfyTp, void *pvData)
     }
 
     m_pfnNotifyCb(&tNotifyInf);
-        
+
     return;
 }
 
@@ -168,7 +169,7 @@ MRESULT Playback::mrPbCtrlEventCb(IMTK_PB_CTRL_EVENT_T eEventType, uint32_t u4Da
             break;
         case IMTK_PB_CTRL_EVENT_CUR_TIME_UPDATE:
             u4Data /=1000;
-            if (u4Data != m_tTmInf.u4CurTime) 
+            if (u4Data != m_tTmInf.u4CurTime)
             {
                 WEBKOK_PB_INFO(("evt Cur_Time:<%d>\n", u4Data));
                 m_tTmInf.u4CurTime = u4Data;
@@ -270,7 +271,7 @@ VOID Playback::vInit()
     m_pfnNotifyCb = NULL;
     memset((VOID *)&m_tUopQueue, 0, sizeof(PB_UOP_QUEUE_T));
     m_ePBCStt = E_PBC_IDLE;
-    m_pcFilePath = NULL; 
+    m_pcFilePath = NULL;
     m_u1Volume = PB_AUD_VOL_MAX;
     m_tTmInf.u4CurTime = 0;
     m_tTmInf.u4TtTime = 0;
@@ -309,13 +310,13 @@ MRESULT Playback::mrPlay()
     WEBKOK_PB_ASSERT(IMTK_NULL_HANDLE != m_hPlaybackHandle);
 
     IMTK_PB_ERROR_CODE_T tRet;
-    
+
     if ((m_ePBCStt != E_PBC_STOP) && (m_ePBCStt != E_PBC_IDLE))
     {
         WEBKOK_PB_ERROR(("Pbc stt invalid!!! \n"));
         return MRESULT_NOT_IMPL;
     }
-    
+
     tRet = IMtkPb_Ctrl_Play(m_hPlaybackHandle, 0);
     if (tRet != IMTK_PB_ERROR_CODE_OK)
     {
@@ -345,7 +346,7 @@ MRESULT Playback::mrPlay(/*string & filePath*/ const char *pcFilePath)
 
     IMTK_PB_ERROR_CODE_T tRet;
     IMTK_PB_CTRL_ENGINE_PARAM_T tParam = {0};
-    
+
     tParam.uBufferModelParam.tUriInfo.u4URI_len = strlen((char *)pcFilePath);
     tParam.uBufferModelParam.tUriInfo.pu1URI = (uint8_t *)pcFilePath;
     tParam.uBufferModelParam.tUriInfo.eBufSizeType = IMTK_PB_CTRL_BUF_SIZE_TYPE_BYTE;
@@ -360,7 +361,7 @@ MRESULT Playback::mrPlay(/*string & filePath*/ const char *pcFilePath)
         WEBKOK_PB_ERROR(("invalid Param \n"));
         return MRESULT_INV_ARG;
     }
-    
+
     WEBKOK_PB_INFO(("IMtkPb_Ctrl_Play \n"));
     tRet = IMtkPb_Ctrl_Play(m_hPlaybackHandle, 0);
     if (tRet != IMTK_PB_ERROR_CODE_OK)
@@ -368,7 +369,7 @@ MRESULT Playback::mrPlay(/*string & filePath*/ const char *pcFilePath)
         return MRESULT_NOT_IMPL;
     }
 
-    if (m_pcFilePath != NULL) 
+    if (m_pcFilePath != NULL)
     {
         free(m_pcFilePath);
         m_pcFilePath = NULL;
@@ -385,12 +386,12 @@ MRESULT Playback::mrPlay(/*string & filePath*/ const char *pcFilePath)
 MRESULT Playback::mrPause()
 {
     WEBKOK_PB_INFO(("cmd-pause\n"));
-    WEBKOK_PB_ASSERT(IMTK_NULL_HANDLE != m_hPlaybackHandle);   
+    WEBKOK_PB_ASSERT(IMTK_NULL_HANDLE != m_hPlaybackHandle);
 
     IMTK_PB_ERROR_CODE_T tRet = IMTK_PB_ERROR_CODE_OK;
     IMTK_PB_CTRL_STATE_T tState = IMTK_PB_CTRL_UNKNOWN;
     UINT32 u4Cnt = 0;
-    
+
     tRet = IMtkPb_Ctrl_Pause(m_hPlaybackHandle);
     if (tRet != IMTK_PB_ERROR_CODE_OK)
     {
@@ -408,7 +409,7 @@ MRESULT Playback::mrPause()
             break;
         }
     }
-    
+
     m_ePBCStt = E_PBC_PAUSE;
     vPfnNotifyCbProxy(E_PBC_NOTIFY, &m_ePBCStt);
     return MRESULT_OK;
@@ -417,10 +418,10 @@ MRESULT Playback::mrPause()
 MRESULT Playback::mrResume()
 {
     WEBKOK_PB_INFO(("cmd-resume\n"));
-    WEBKOK_PB_ASSERT(IMTK_NULL_HANDLE != m_hPlaybackHandle);   
+    WEBKOK_PB_ASSERT(IMTK_NULL_HANDLE != m_hPlaybackHandle);
 
     IMTK_PB_ERROR_CODE_T tRet;
-    
+
     tRet = IMtkPb_Ctrl_Play(m_hPlaybackHandle, 0);
     if (tRet != IMTK_PB_ERROR_CODE_OK)
     {
@@ -441,7 +442,7 @@ MRESULT Playback::mrStop(BOOL fgSync)
     IMTK_PB_ERROR_CODE_T tRet = IMTK_PB_ERROR_CODE_OK;
     IMTK_PB_CTRL_STATE_T tState = IMTK_PB_CTRL_UNKNOWN;
     UINT32 u4Cnt = 0;
-    
+
     tRet = IMtkPb_Ctrl_Stop(m_hPlaybackHandle);
     if (tRet != IMTK_PB_ERROR_CODE_OK)
     {
@@ -459,7 +460,7 @@ MRESULT Playback::mrStop(BOOL fgSync)
             break;
         }
     }
-    
+
     m_ePBCStt = E_PBC_STOP;
     vPfnNotifyCbProxy(E_PBC_NOTIFY, &m_ePBCStt);
     WEBKOK_PB_INFO(("cmd-stop --> done-2\n"));
@@ -497,7 +498,7 @@ MRESULT Playback::mrMute(BOOL fgMute, IMTK_PB_MISC_AUD_CHANNEL eChannel)
             return MRESULT_NOT_IMPL;
         }
     }
-    
+
     return MRESULT_OK;
 }
 
@@ -541,7 +542,7 @@ MRESULT Playback::mrVolume(BOOL fgUp, IMTK_PB_MISC_AUD_CHANNEL eChannel)
         WEBKOK_PB_ERROR(("set volume fail\n"));
         return MRESULT_NOT_IMPL;
     }
-    
+
     return MRESULT_OK;
 }
 
@@ -610,7 +611,7 @@ MRESULT Playback::mrGetAudioTrack(IMTK_PB_CTRL_GET_CUR_AUD_TRACK_INFO_T *ptAudTr
     WEBKOK_PB_ASSERT(IMTK_NULL_HANDLE != m_hPlaybackHandle);
 
     IMTK_PB_ERROR_CODE_T tRet;
-    
+
     tRet = IMtkPb_Ctrl_GetCurAudTrackInfo(m_hPlaybackHandle, ptAudTrkInf);
 
     return (tRet != IMTK_PB_ERROR_CODE_OK) ? MRESULT_NOT_IMPL : MRESULT_OK;
@@ -624,7 +625,7 @@ MRESULT Playback::mrSetAudioTrack(UINT16 u2Trk)
     IMTK_PB_ERROR_CODE_T tRet;
 
     tRet = IMtkPb_Ctrl_SetAudTrack(m_hPlaybackHandle, u2Trk);
-    
+
     return (tRet != IMTK_PB_ERROR_CODE_OK) ? MRESULT_NOT_IMPL : MRESULT_OK;
 }
 

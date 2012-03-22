@@ -23,6 +23,7 @@ static void IPCHandler(IPCNotify * notify)
 }
 
 
+
 Karaoke::Karaoke() : background()
 {
     LOG_API();
@@ -39,13 +40,26 @@ Karaoke::Karaoke() : background()
     log_init();
 
     /* create gui modules */
-    guiManager.append(new Login(&background));
-    guiManager.append(new Category(&background));
-    guiManager.append(new PlayListView(&background));
-    guiManager.append(new SearchResult(&background));
-    guiManager.append(new Player(&background));
-    guiManager.append(new SingerList(&background));
-    guiManager.append(new Menu(&background));
+    login           = new Login(&background);
+    guiManager.append(login);
+
+    category        = new Category(&background);
+    guiManager.append(category);
+
+    player          = new Player(&background);
+    guiManager.append(player);
+
+    playlistview    = new PlayListView(&background);
+    guiManager.append(playlistview);
+
+    searchresult    = new SearchResult(&background);
+    guiManager.append(searchresult);
+
+    singerlist      = new SingerList(&background);
+    guiManager.append(singerlist);
+
+    menu            = new Menu(&background);
+    guiManager.append(menu);
 
     dbg_init();
 
@@ -56,6 +70,13 @@ Karaoke::~Karaoke()
     LOG_API();
     DELETE(ipc);
     DELETE(cli);
+    DELETE(menu);
+    DELETE(singerlist);
+    DELETE(searchresult);
+    DELETE(playlistview);
+    DELETE(player);
+    DELETE(login);
+
 }
 
 int Karaoke::resume()

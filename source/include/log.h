@@ -19,7 +19,7 @@
     do \
     { \
         if(get_log_lvl()&LOG_LEVEL_TRACE) \
-            printf("<trace> %s,%s, L%d, %s.\n", __VA_ARGS__, __FUNCTION__,__LINE__,__FILE__); \
+            printf("<trace> %s,%s, L%d, %s.\n", __VA_ARGS__, __FUNCTION_NAME__,__LINE__,__FILE__); \
     }while(0)
 
 
@@ -27,7 +27,7 @@
     do \
     { \
         if(get_log_lvl()&LOG_LEVEL_API) \
-            printf("<api> %s, L%d, %s.\n",__FUNCTION__,__LINE__,__FILE__); \
+            printf("<api> %s, L%d, %s.\n",__FUNCTION_NAME__,__LINE__,__FILE__); \
     }while(0)
 
 
@@ -55,7 +55,7 @@
         if(get_log_lvl()&LOG_LEVEL_ASSERT) \
         { \
             if(!(_stmt)){ \
-                printf("<assert> FAIL!\n+++++++++++ %s, L%d, %s.\n",#_stmt,__LINE__,__FUNCTION__);\
+                printf("<assert> FAIL!\n+++++++++++ %s, L%d, %s.\n",#_stmt,__LINE__,__FUNCTION_NAME__);\
               while(1); \
             } \
         } \

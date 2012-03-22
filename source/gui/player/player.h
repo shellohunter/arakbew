@@ -1,6 +1,6 @@
 
-#ifndef PLAYER_HPP
-#define PLAYER_HPP
+#ifndef PLAYER_H
+#define PLAYER_H
 
 #include <QtGui>
 #include <QtCore>
@@ -45,8 +45,14 @@ public slots:
     void slotStop();
     void slotNext();
     void slotPlay();
+    void slotPlay(const char * path);
     void slotPause();
     void slotPrev();
+
+signals:
+    void signalPlayStart();
+    void signalPlayStop();
+
 };
 
 
@@ -54,5 +60,5 @@ public slots:
 
 
 
-#endif /* PLAYER_HPP */
+#endif /* PLAYER_H */
 

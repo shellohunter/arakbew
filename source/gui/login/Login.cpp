@@ -28,17 +28,24 @@ int Login::init()
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/images/dialog_background.png")));
     root->setPalette(palette);
     root->setGeometry(260, 120, 300, 150);
+    root->setStyleSheet("QPushButton {background: lightgray; color: blue; font: 14px bold;}");
 
     kb = new KeyBoard("");
-    label_title     = new QLabel(QObject::tr("Welcome to karaoke!"), root);
+    label_title     = new QLabel(QObject::tr("Welcome to Karaoke!"), root);
+    label_title->setStyleSheet("color: red; font: 24px bold;");
+    label_title->setAlignment(Qt::AlignCenter);
     label_username  = new QLabel(QObject::tr("username"), root);
+    label_username->setStyleSheet("padding-left: 10px;");
     label_password  = new QLabel(QObject::tr("password"), root);
+    label_password->setStyleSheet("padding-left: 10px;");
     edit_username   = new InputLine(kb, root);
     edit_password   = new InputLine(kb, root);
     edit_password->echo(false);
     btn_login       = new Button(QObject::tr("Login"), root);
+    //btn_login->setStyleSheet("{background: whitesmoke; barder:none; color: blue; font: 16px;}");
     btn_register    = new Button(QObject::tr("Register"), root);
     btn_exit        = new Button(QObject::tr("Exit"), root);
+
 
     QGridLayout  *layoutGrid = new QGridLayout();
     layoutGrid->addWidget(label_title, 0,0,1,3);

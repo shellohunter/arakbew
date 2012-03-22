@@ -147,7 +147,6 @@ int SingerList::init()
             singerIcon[i*4+j] = new SingerIcon(root);
             singerIcon[i*4+j]->move(70+150*j,50+180*i);
             //singerIcon[i*4+j]->setPicture(QString(":/images/unknown_avatar.png"));
-            LOG_INFO(singers[i*4+j]);
             singerIcon[i*4+j]->setPicture(QString(singers[i*4+j]));
             singerIcon[i*4+j]->setText("Some One");
             connect(singerIcon[i*4+j], SIGNAL(clicked()), this, SLOT(slotSingerSelected()));

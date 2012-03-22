@@ -35,7 +35,7 @@ typedef struct
 #define GUI_MODULE_MENU                 "menu"
 #define GUI_MODULE_CATEGORY             "category"
 #define GUI_MODULE_SEARCHRESULT         "searchresult"
-#define GUI_MODULE_PLAYLIST             "playlist"
+#define GUI_MODULE_PLAYLIST             "playlistview"
 #define GUI_MODULE_PLAYER               "player"
 #define GUI_MODULE_SINGERLIST           "singerlist"
 

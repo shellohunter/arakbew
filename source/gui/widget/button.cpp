@@ -25,13 +25,6 @@ Button::~Button()
 
 
 
-void Button::setStyleSheet(const QString& css)
-{
-    style = css;
-}
-
-
-
 void Button::keyPressEvent(QKeyEvent * event)
 {
 

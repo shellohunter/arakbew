@@ -14,6 +14,7 @@ src_files = Split("""
             songlist/SongListView.cpp
             singerlist/SingerList.cpp
             playlist/PlayListView.cpp
+            playlist/PlayListItem.cpp
             player/player.cpp
             background/Background.cpp
             ../database/database.cpp

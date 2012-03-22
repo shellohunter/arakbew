@@ -1,4 +1,7 @@
 
+#ifndef PLAYLIST_H
+#define PLAYLIST_H
+
 #include <deque>
 #include "database.h"
 #include "shared.h"
@@ -36,17 +39,22 @@ public:
     }
 
 
-    Song pop(unsigned i = 0)
+    Song pop()
     {
-        if(i<0 || i>=this->size())
+        if(0 == this->size())
         {
-            LOG_ERROR("<playlist> %s(%d), invalid index!\n", __FUNCTION__, i);
+            LOG_ERROR("<playlist> no element to pop! in %s.\n", __FUNCTION_NAME__);
             return Song();
         }
-        LOG_VERBOSE("<playlist> pop[%d], \"%s\", bf pop size == %d.\n", i, this->at(i).name.c_str(), this->size());
+        LOG_VERBOSE("<playlist> pop, \"%s\", bf pop size == %d.\n",this->at(0).name.c_str(), this->size());
 
-        this->remove(this->at(i));
-        return this->at(i);
+        this->remove(this->at(0));
+        return this->at(0);
+    }
+
+    Song top()
+    {
+        return this->at(0);
     }
 
     bool has(Song& song)
@@ -90,7 +98,7 @@ public:
     void moveBackward(const Song& song, int step = 1)
     {
         int idx = this->find(song);
-        LOG_INFO("<playlist> %s(\"%s\", %d).\n",__FUNCTION__, song.name.c_str(), step);
+        LOG_INFO("<playlist> %s(\"%s\", %d).\n",__FUNCTION_NAME__, song.name.c_str(), step);
         if((idx+step) >= this->size() || idx < 0)
         {
             LOG_ERROR("<playlist> can not move, (idx, step) == (%d, %d).\n", idx, step);
@@ -128,28 +136,25 @@ public:
     {
         deque<Song>::iterator iter = this->begin();
         deque<Song>::iterator iter_end = this->end();
-        printf("----------------------------------\n");   
+        printf("----------------------------------\n");
         for(;iter != iter_end;++iter)
         {
             (*iter).toString();
         }
-        printf("----------------------------------\n");   
+        printf("----------------------------------\n");
     }
 };
 
 
 
 
+extern PlayList playlist; /* defined in playlistview.cpp */
 
 
 
 
 
-
-
-
-
-
+#endif /* PLAYLIST_H */
 
 
 

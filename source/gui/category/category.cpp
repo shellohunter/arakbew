@@ -6,8 +6,6 @@
 MBtnCategory::MBtnCategory(const QString & text, ECategoryType type, Category * parent)
                         :QPushButton(text, parent->root)
 {
-    LOG_API();
-
     QObject::connect(this, SIGNAL(signalMouseEvent(MBtnCategory *)), parent, SLOT(slotCategorySelected(MBtnCategory *)));
     this->setStyleSheet("color:red; border:1px solid #AAAAAA; background-color: white;");
     this->setFixedSize(135,128);
@@ -162,7 +160,7 @@ int Category::processMessage(int msg, void * data)
 
 void Category::slotCategorySelected(MBtnCategory * button)
 {
-    LOG_VERBOSE("<category> %s(%s)", __FUNCTION__,qPrintable(button->text()));
+    LOG_VERBOSE("<category> %s(%s)", __FUNCTION_NAME__,qPrintable(button->text()));
 
     GuiEvent event;
     event.type = GUI_EVENT_RESUME_PAGE;
@@ -288,7 +286,7 @@ bool Category::eventFilter(QObject * obj, QEvent * event)
 
 void Category::mouseClick(MBtnCategory * button)
 {
-    LOG_VERBOSE("<category> dbg trace line %d, %s. %s",__LINE__, __FUNCTION__,qPrintable(button->text()));
+    LOG_VERBOSE("<category> dbg trace line %d, %s. %s",__LINE__, __FUNCTION_NAME__,qPrintable(button->text()));
     moveFocus(button);
 }
 
