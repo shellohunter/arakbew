@@ -30,6 +30,7 @@ private:
 signals:
     void signalSongAdd(Song song);
     void signalSongDel(Song song);
+    void signalFocusOut();
 };
 
 class SongListItemDelegate:public QItemDelegate

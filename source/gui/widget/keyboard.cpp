@@ -95,6 +95,7 @@ KeyConfig keys_config[KEYNUM] =
 KeyBoard::KeyBoard(QString titleText, QWidget * parent)
     : QWidget(parent), input((const char *)0), mode(E_MODE_NORMAL)
 {
+    LOG_INFO("KeyBoard.cpp, %s(%s, %p).\n", __FUNCTION__, qPrintable(titleText), parent);
     init(titleText, parent);
 }
 
@@ -102,6 +103,7 @@ KeyBoard::KeyBoard(QString titleText, QWidget * parent)
 KeyBoard::KeyBoard(QWidget * parent)
     : QWidget(parent), input((const char *)0), mode(E_MODE_NORMAL)
 {
+    LOG_INFO("KeyBoard.cpp, %s(%p).\n", __FUNCTION__, parent);
     init(0, parent);
 }
 
@@ -161,6 +163,7 @@ int KeyBoard::init(QString titleText, QWidget * parent)
 
 KeyBoard::~KeyBoard()
 {
+    LOG_INFO("KeyBoard.cpp, %s().\n", __FUNCTION__);
 }
 
 int KeyBoard::open()

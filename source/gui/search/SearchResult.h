@@ -45,7 +45,9 @@ private:
 
 private slots:
     void slotReturnButton();
-
+    void slotPrevButton();
+    void slotNextButton();
+    void slotSonglistFocusOut();
 };
 
 #endif /* SEARCHRESULT_HPP */

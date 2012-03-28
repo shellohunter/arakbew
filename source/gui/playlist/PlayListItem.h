@@ -17,7 +17,7 @@ Q_OBJECT
 public:
     PlayListItem(QWidget *parent = NULL);
     void setContent(const char * songName, const char * singerName, bool playing = false);
-    void setContent(QString & songName, QString & singerName, bool playing = false);
+    void setContent(QString songName, QString singerName, bool playing = false);
     void focusIn();
     void focusOut();
     virtual ~PlayListItem();

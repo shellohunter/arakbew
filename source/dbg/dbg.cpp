@@ -139,7 +139,7 @@ int dbg_init(void)
     sa.sa_sigaction = &sighandler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_SIGINFO;
-    if ((ret = sigaction(SIGINT, &sa, &old_int)) != 0) return ret;
+    //if ((ret = sigaction(SIGINT, &sa, &old_int)) != 0) return ret;
     if ((ret = sigaction(SIGILL, &sa, &old_ill)) != 0) return ret;
     if ((ret = sigaction(SIGTERM, &sa, &old_term)) != 0) return ret;
     if ((ret = sigaction(SIGFPE, &sa, &old_fpe)) != 0) return ret;

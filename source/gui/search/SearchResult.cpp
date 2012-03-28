@@ -37,15 +37,19 @@ int SearchResult::init()
 
     song_table = new SongListView(songs, root);
     song_table->setGeometry(10, 40, 700, 300);
+    song_table->installEventFilter(this);
 
     button_prev = new Button("Page Up", root);
     button_prev->setGeometry(10, 420, 80, 20);
+    button_prev->installEventFilter(this);
 
     button_next = new Button("Page Down", root);
     button_next->setGeometry(100, 420, 80, 20);
+    button_next->installEventFilter(this);
 
     button_return = new Button("Back", root);
     button_return->setGeometry(800, 420, 40, 20);
+    button_return->installEventFilter(this);
 
     QHBoxLayout * header = new QHBoxLayout();
     header->addWidget(label_current);
@@ -63,10 +67,12 @@ int SearchResult::init()
 
     song_table->setFocus();
     root->setLayout(vlayout);
-    this->installEventFilter(this);
+    //this->installEventFilter(this);
 
     connect(button_return, SIGNAL(clicked()), this, SLOT(slotReturnButton()));
-    printf("player %p\n", GuiManager::gm->getModule(GUI_MODULE_PLAYLIST));
+    connect(song_table, SIGNAL(signalFocusOut()), this, SLOT(slotSonglistFocusOut()));
+    connect(button_prev, SIGNAL(clicked()), this, SLOT(slotPrevButton()));
+    connect(button_next, SIGNAL(clicked()), this, SLOT(slotNextButton()));
 #if 1
     connect(song_table, SIGNAL(signalSongAdd(Song)),
         GuiManager::gm->getModule(GUI_MODULE_PLAYLIST), SLOT(slotSongAdd(Song)));
@@ -143,6 +149,15 @@ bool SearchResult::eventFilter(QObject * obj, QEvent * event)
                 slotReturnButton();
                 event->accept();
                 return true;
+            case Qt::Key_Up:
+                if(button_return->hasFocus()
+                || button_prev->hasFocus()
+                || button_next->hasFocus())
+                {
+                    song_table->setFocus();
+                    return true;
+                }
+                break;
             default:
                 break;
         }
@@ -158,6 +173,28 @@ void SearchResult::slotReturnButton()
     GuiEvent event;
     event.type = GUI_EVENT_PAUSE_PAGE;
     sendEvent(&event);
+}
+
+
+void SearchResult::slotPrevButton()
+{
+    LOG_API();
+    song_table->verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepSub);
+
+}
+
+
+void SearchResult::slotNextButton()
+{
+    LOG_API();
+    song_table->verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepAdd);
+}
+
+
+void SearchResult::slotSonglistFocusOut()
+{
+    LOG_API();
+    button_prev->setFocus();
 }
 
 

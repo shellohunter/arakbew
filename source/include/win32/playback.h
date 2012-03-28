@@ -274,7 +274,7 @@ public:
     MRESULT mrVocal(BOOL fgEnable);
     MRESULT mrVolume(BOOL fgUp, IMTK_PB_MISC_AUD_CHANNEL eChannel = IMTK_PB_MISC_AUD_CHANNEL_ALL);
     MRESULT mrSetVideoWindow(UINT32 u4X, UINT32 u4Y, UINT32 u4W, UINT32 u4H);
-    //string currentPath();
+    char * const mrGetCurrentPath();
     E_PBC_STT eGetPBCStt();
     MRESULT mrGetPbTimeInfo(PB_TIME_INF_T &tTmInf);
     MRESULT mrGetMediaInfo(IMTK_PB_CTRL_GET_MEDIA_INFO_T *ptMediaInfo);

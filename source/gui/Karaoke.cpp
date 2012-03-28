@@ -38,6 +38,7 @@ Karaoke::Karaoke() : background()
 
     /* init log */
     log_init();
+    dbg_init();
 
     /* create gui modules */
     login           = new Login(&background);
@@ -61,7 +62,7 @@ Karaoke::Karaoke() : background()
     menu            = new Menu(&background);
     guiManager.append(menu);
 
-    dbg_init();
+    dbg_init(); // reinstall signal handler.
 
 }
 

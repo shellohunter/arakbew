@@ -27,8 +27,9 @@ public:
     int exit();
     int processMessage(int msg, void * data);
 
-private:
     Playback * player;
+
+private:
 
     QWidget * root;
 

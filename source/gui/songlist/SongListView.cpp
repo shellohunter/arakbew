@@ -78,6 +78,14 @@ void SongListView::keyPressEvent (QKeyEvent * keyEvent)
             break;
         }
 
+        case Qt::Key_Down:
+            LOG_INFO("Key_Down row %d\n",currentIndex().row());
+            if(model->rowCount() == this->currentIndex().row()+1)
+            {
+                emit signalFocusOut();
+            }
+            break;
+
         /* for IR only */
         case Qt::Key_MediaPrevious: // page up
             this->verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepSub);
@@ -208,7 +216,7 @@ SongListStandardItemModel::SongListStandardItemModel(DataSet<Song*>& songs, QObj
     QStringList headerLabels;
     headerLabels << "Name" << "Album" << "Singer" << "Status";
     this->setHorizontalHeaderLabels(headerLabels);
-    this->setRowCount(songs.size());
+    this->setRowCount(5);
     this->setColumnCount(4);
 
     this->songs = &songs;

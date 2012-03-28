@@ -5,7 +5,7 @@
 
 #include "playlist.h"
 #include "../player/player.h"
-#include "PlaylistItem.h"
+#include "PlayListItem.h"
 #include "PlayListView.h"
 
 
@@ -166,13 +166,6 @@ int PlayListView::init()
 
     initNavigation();
     connect(btn_return, SIGNAL(clicked()), this, SLOT(slotReturnButton()));
-#if 0
-    ui = new Ui();
-    ui->setupUi(root);
-
-    connect(ui->pushButton_3, SIGNAL(clicked()), this, SLOT(slotReturnButton()));
-    connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(slotContextMenu()));
-#endif
 
     root->hide();
     return OK;
@@ -182,7 +175,7 @@ int PlayListView::init()
 
 int PlayListView::resume()
 {
-    int i = 0;
+    unsigned int i = 0;
     LOG_API();
 
 
@@ -239,7 +232,6 @@ int PlayListView::pause()
 int PlayListView::exit()
 {
     LOG_API();
-    DELETE(ui);
     DELETE(root);
     return OK;
 }
@@ -398,7 +390,10 @@ int PlayListView::CursorKeyEvent(int key)
                 switch(key)
                 {
                     case Qt::Key_Up:
-                        temp =  this->navi[i].btn_up;
+                        if(playlist.size() != 0)
+                            temp =  this->navi[i].btn_up;
+                        else
+                            temp = NULL;
                         break;
                     case Qt::Key_Down:
                         temp =  this->navi[i].btn_down;

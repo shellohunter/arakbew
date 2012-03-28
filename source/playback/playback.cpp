@@ -105,12 +105,12 @@ Playback::Playback(const char * pThreadName, PFN_PB_NOTIFY_CB pfnCb) : PThread(p
 Playback::~Playback()
 {
     WEBKOK_PB_INFO(("~Playback\n"));
-    vInit();
     if (m_pcFilePath != NULL)
     {
         free(m_pcFilePath);
         m_pcFilePath = NULL;
     }
+    vInit();
 /*
     IMtkPb_Ctrl_Close(m_hPlaybackHandle);
     IMtkPb_Misc_Terminate();
@@ -569,14 +569,16 @@ MRESULT Playback::mrSetVideoWindow(UINT32 u4X, UINT32 u4Y, UINT32 u4W, UINT32 u4
 
     return (tRet != IMTK_PB_ERROR_CODE_OK) ? MRESULT_NOT_IMPL : MRESULT_OK;
 }
-/*
-string Playback::currentPath()
+
+
+char * const Playback::mrGetCurrentPath()
 {
     WEBKOK_PB_INFO(("Get current path"));
 
-    return m_sCurrentFile;
+    return m_pcFilePath;
 }
-*/
+
+
 E_PBC_STT Playback::eGetPBCStt()
 {
     WEBKOK_PB_INFO(("Get current PBC state: %d\n", (UINT32)m_ePBCStt));

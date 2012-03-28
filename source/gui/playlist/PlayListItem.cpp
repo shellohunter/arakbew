@@ -58,7 +58,7 @@ void PlayListItem::setContent(const char * songName, const char * singerName, bo
 }
 
 
-void PlayListItem::setContent(QString & songName, QString & singerName, bool playing)
+void PlayListItem::setContent(QString songName, QString singerName, bool playing)
 {
     LOG_API();
     label_songName->setText(songName);

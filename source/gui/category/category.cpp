@@ -114,6 +114,7 @@ int Category::init()
     //this->addLayout(layoutGrid);
     root->setLayout(layoutGrid);
     root->setFocusPolicy(Qt::NoFocus);
+    focus_btn = NULL;
     this->moveFocus(btn_cates[0]);
 
     connect(btn_return, SIGNAL(clicked()), this, SLOT(slotReturnButton()));
